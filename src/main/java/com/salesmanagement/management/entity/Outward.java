@@ -1,5 +1,4 @@
 package com.salesmanagement.management.entity;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,14 +10,14 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Inward {
+public class Outward {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    long inwardId;
-    int inwardMemoNumber;
-    int inwardItemSize;
-    String inwardItemType;
-    String inwardDate;
-    float inwardDozen;
-    int inwardPiece;
+    long outwardId;
+    int outwardBailNumber;
+    int outwardItemSize;
+    String outwardItemType;
+    String outwardDate;
+    float outwardDozen;
+    int outwardPiece;
 }

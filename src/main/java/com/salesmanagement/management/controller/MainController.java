@@ -2,21 +2,28 @@ package com.salesmanagement.management.controller;
 
 import com.salesmanagement.management.entity.Inward;
 import com.salesmanagement.management.entity.Items;
+import com.salesmanagement.management.entity.Outward;
 import com.salesmanagement.management.service.InwardService;
 import com.salesmanagement.management.service.ItemService;
+import com.salesmanagement.management.service.OutwardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 public class MainController {
-
     @Autowired
     private ItemService itemService;
 
     @Autowired
     private InwardService inwardService;
+
+    @Autowired
+    private OutwardService outwardService;
 
     @GetMapping("/")
     public String home() {
@@ -39,6 +46,18 @@ public class MainController {
         inwardService.addInward(inward);
     }
 
+    @PostMapping("/addOutward")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addOutward(@RequestBody Outward outward){
+        outwardService.addOutward(outward);
+    }
+
+    @PostMapping("/searchItem")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<List<Inward>> searchItem(@RequestBody Items items) {
+        List<Inward> searchQ = inwardService.searchInwardByTypeAndName(items.getItemType(),items.getItemSize());
+        return ResponseEntity.ok(searchQ);
+    }
 
 //    @PostMapping("/addInward")
 //    @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -59,4 +78,3 @@ public class MainController {
 //        inwardService.addInward(inward);
 //    }
 }
-

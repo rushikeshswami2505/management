@@ -1,15 +1,19 @@
 .view-body {
     display: none;
-    /* animation: fadeInSection 1s ease; */
 }
-.view-body.active {
+
+.active{
     display: block;
 }
-.btn.active{
+
+.btn-active{
     background-color : black;
     color : white;
 }
 
+.menu-button:hover{
+    background-color : #00356a;
+}
 @keyframes fadeInSection {
     from {
         opacity: 0;
@@ -20,4 +24,10 @@
 }
 .form-div{
     width : 30%;
+}
+.heading{
+     background-image: linear-gradient(to right, black, 30% , white);
+     color:white;
+     border-radius : 180px 180px 180px 180px;
+     padding-left : 10px;
 }
