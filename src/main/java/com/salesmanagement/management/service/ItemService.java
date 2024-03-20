@@ -15,8 +15,6 @@ public class ItemService {
         this.itemsRepository = itemsRepository;
     }
     public void addNewItem(Items item) {
-
         itemsRepository.save(item);
-        System.out.println("add item called");
     }
 }
