@@ -52,29 +52,17 @@ public class MainController {
         outwardService.addOutward(outward);
     }
 
-    @PostMapping("/searchItem")
+    @PostMapping("/searchInwardItem")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<List<Inward>> searchItem(@RequestBody Items items) {
+    public ResponseEntity<List<Inward>> searchInwardItem(@RequestBody Items items) {
         List<Inward> searchQ = inwardService.searchInwardByTypeAndName(items.getItemType(),items.getItemSize());
         return ResponseEntity.ok(searchQ);
     }
 
-//    @PostMapping("/addInward")
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    public void  addInward(@RequestParam("inwardMemoNumber") String inwardMemoNumber,
-//                           @RequestParam("inwardItemType") String inwardItemType,
-//                           @RequestParam("inwardItemSize") String inwardItemSize,
-//                           @RequestParam("inwardDate") String inwardDate,
-//                           @RequestParam("inwardDozen") String inwardDozen,
-//                           @RequestParam("inwardPiece") String inwardPiece)
-//    {
-//        Inward inward = new Inward();
-//        inward.setInwardMemoNumber(Integer.parseInt(inwardMemoNumber));
-//        inward.setInwardItemType(inwardItemType);
-//        inward.setInwardItemSize(Integer.parseInt(inwardItemSize));
-//        inward.setInwardDate(inwardDate);
-//        inward.setInwardDozen(Float.parseFloat(inwardDozen));
-//        inward.setInwardPiece(Integer.parseInt(inwardPiece));
-//        inwardService.addInward(inward);
-//    }
+    @PostMapping("/searchOutwardItem")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<List<Outward>> searchOutwardItem(@RequestBody Items items) {
+        List<Outward> searchQ = outwardService.searchOutwardByTypeAndName(items.getItemType(),items.getItemSize());
+        return ResponseEntity.ok(searchQ);
+    }
 }
