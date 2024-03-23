@@ -55,14 +55,21 @@ public class MainController {
     @PostMapping("/searchInwardItem")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<List<Inward>> searchInwardItem(@RequestBody Items items) {
-        List<Inward> searchQ = inwardService.searchInwardByTypeAndName(items.getItemType(),items.getItemSize());
+        List<Inward> searchQ = inwardService.searchInwardByTypeAndSize(items.getItemType(),items.getItemSize());
         return ResponseEntity.ok(searchQ);
     }
 
     @PostMapping("/searchOutwardItem")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<List<Outward>> searchOutwardItem(@RequestBody Items items) {
-        List<Outward> searchQ = outwardService.searchOutwardByTypeAndName(items.getItemType(),items.getItemSize());
+        List<Outward> searchQ = outwardService.searchOutwardByTypeAndSize(items.getItemType(),items.getItemSize());
+        return ResponseEntity.ok(searchQ);
+    }
+
+    @PostMapping("/searchAllItem")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<List<Items>> searchAllItem(@RequestBody Items items){
+        List<Items> searchQ = itemService.searchItemsByTypeAndSize(items.getItemType(),items.getItemSize());
         return ResponseEntity.ok(searchQ);
     }
 }

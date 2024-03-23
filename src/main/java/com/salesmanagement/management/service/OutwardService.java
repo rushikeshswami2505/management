@@ -19,7 +19,10 @@ public class OutwardService {
         outwardRepository.save(outward);
     }
 
-    public List<Outward> searchOutwardByTypeAndName(String itemType, int itemSize) {
-        return outwardRepository.getOutwardByItemTypeAndItemSize(itemType,itemSize);
+    public List<Outward> searchOutwardByTypeAndSize(String itemType, int itemSize) {
+        if (itemType.isEmpty() && itemSize == 0) return outwardRepository.findAll();
+        else if(itemType.isEmpty()) return outwardRepository.getOutwardByItemSize(itemSize);
+        else if(itemSize == 0) return outwardRepository.getOutwardByItemType(itemType);
+        else return outwardRepository.getOutwardByItemTypeAndItemSize(itemType,itemSize);
     }
 }

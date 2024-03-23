@@ -21,7 +21,10 @@ public class InwardService {
         inwardRepository.save(inward);
     }
 
-    public List<Inward> searchInwardByTypeAndName(String itemType, int itemSize) {
-        return inwardRepository.getInwardByItemTypeAndItemSize(itemType,itemSize);
+    public List<Inward> searchInwardByTypeAndSize(String itemType, int itemSize) {
+        if (itemType.isEmpty() && itemSize == 0) return inwardRepository.findAll();
+        else if(itemType.isEmpty()) return inwardRepository.getInwardByItemSize(itemSize);
+        else if(itemSize == 0) return inwardRepository.getInwardByItemType(itemType);
+        else return inwardRepository.getInwardByItemTypeAndItemSize(itemType,itemSize);
     }
 }

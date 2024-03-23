@@ -9,4 +9,10 @@ import java.util.List;
 public interface OutwardRepository extends JpaRepository<Outward,Long> {
     @Query("select i from Outward i where i.outwardItemType = ?1 and i.outwardItemSize = ?2")
     List<Outward> getOutwardByItemTypeAndItemSize(String itemType, int itemSize);
+
+    @Query("select i from Outward i where i.outwardItemSize = ?1")
+    List<Outward> getOutwardByItemSize(int itemSize);
+
+    @Query("select i from Outward i where i.outwardItemType = ?1")
+    List<Outward> getOutwardByItemType(String itemType);
 }
