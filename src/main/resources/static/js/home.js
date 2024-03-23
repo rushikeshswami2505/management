@@ -88,12 +88,18 @@ document.getElementById('inwardForm').addEventListener('submit', function(event)
 
     // Convert form data to JSON
     var jsonObject = {};
-    jsonObject["inwardMemoNumber"] = inwardMemoNumber;
-    jsonObject["inwardDate"] = inwardDate;
+    var inwardId = {};
 
-    formData.forEach(function(value, key){
-        jsonObject[key] = value;
-    });
+    // Populate inwardId object with values
+    inwardId["inwardMemoNumber"] = document.getElementById("inwardMemoNumber").value;
+    inwardId["inwardItemSize"] = document.getElementById("inwardItemSize").value;
+    inwardId["inwardItemType"] = document.getElementById("inwardItemType").value;
+
+    // Populate jsonObject with other values
+    jsonObject["inwardDate"] = document.getElementById("inwardDate").value;
+    jsonObject["inwardDozen"] = document.getElementById("inwardDozen").value;
+    jsonObject["inwardPiece"] = document.getElementById("inwardPiece").value;
+    jsonObject["inwardId"] = inwardId;
 
     console.log(jsonObject);
     fetch('/addInward', {
@@ -185,12 +191,18 @@ document.getElementById('outwardForm').addEventListener('submit', function(event
 
     // Convert form data to JSON
     var jsonObject = {};
-    jsonObject["outwardBailNumber"] = outwardBailNumber;
-    jsonObject["outwardDate"] = outwardDate;
+    var outwardId= {};
 
-    formData.forEach(function(value, key){
-        jsonObject[key] = value;
-    });
+    // Populate inwardId object with values
+    outwardId["outwardBailNumber"] = document.getElementById("outwardBailNumber").value;
+    outwardId["outwardItemSize"] = document.getElementById("outwardItemSize").value;
+    outwardId["outwardItemType"] = document.getElementById("outwardItemType").value;
+
+    // Populate jsonObject with other values
+    jsonObject["outwardDate"] = document.getElementById("outwardDate").value;
+    jsonObject["outwardDozen"] = document.getElementById("outwardDozen").value;
+    jsonObject["outwardPiece"] = document.getElementById("outwardPiece").value;
+    jsonObject["outwardId"] = outwardId;
 
     console.log(jsonObject);
 
@@ -257,11 +269,12 @@ function handleFormSubmit(event) {
     let searchItemType = document.getElementById("searchItemType");
     let searchType = inwardRadio.checked ? "searchInwardItem" : outwardRadio.checked? "searchOutwardItem" : "searchAllItem";
 
-    var jsonObject = {
+    var itemsIdObject = {
         "itemSize": searchItemSize.value,
         "itemType": searchItemType.value
     };
-
+    jsonObject = {};
+    jsonObject["itemsId"] = itemsIdObject;
     fetch(`/${searchType}`, {
         method: 'POST',
         headers: {
@@ -286,14 +299,15 @@ function handleFormSubmit(event) {
 function displayItems(items) {
     const tableBody = document.querySelector(".search-table-body");
     tableBody.innerHTML = ""; // Clear existing rows
-
+    var rowId=1;
     items.forEach(item => {
         var newRow = document.createElement('tr');
-        newRow.innerHTML = `<th scope="row">${item.inwardId || item.outwardId || item.itemId}</th>
-                          <td>${item.inwardMemoNumber || item.outwardBailNumber || item.itemSize}</td>
-                          <td>${item.inwardDate || item.outwardDate || item.itemType}</td>
-                          <td>${item.inwardItemSize || item.outwardItemSize || ""}</td>
-                          <td>${item.inwardItemType || item.outwardItemType|| ""}</td>
+
+        newRow.innerHTML = `<th scope="row">${rowId++}</th>
+                          <td>${item.inwardId?.inwardMemoNumber || item.outwardId?.outwardBailNumber || item.itemsId?.itemSize}</td>
+                          <td>${item.inwardDate || item.outwardDate || item.itemsId?.itemType}</td>
+                          <td>${item.inwardId?.inwardItemSize || item.outwardId?.outwardItemSize || ""}</td>
+                          <td>${item.inwardId?.inwardItemType || item.outwardId?.outwardItemType || ""}</td>
                           <td>${item.inwardDozen || item.outwardDozen || ""}</td>
                           <td>${item.inwardPiece || item.outwardPiece || ""}</td>`;
         tableBody.appendChild(newRow);

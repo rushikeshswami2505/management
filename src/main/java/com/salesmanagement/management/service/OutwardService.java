@@ -1,6 +1,6 @@
 package com.salesmanagement.management.service;
 
-import com.salesmanagement.management.entity.Outward;
+import com.salesmanagement.management.entity.outward.Outward;
 import com.salesmanagement.management.repository.OutwardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

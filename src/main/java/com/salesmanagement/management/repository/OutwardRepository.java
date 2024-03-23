@@ -1,18 +1,19 @@
 package com.salesmanagement.management.repository;
 
-import com.salesmanagement.management.entity.Outward;
+import com.salesmanagement.management.entity.outward.Outward;
+import com.salesmanagement.management.entity.outward.OutwardId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface OutwardRepository extends JpaRepository<Outward,Long> {
-    @Query("select i from Outward i where i.outwardItemType = ?1 and i.outwardItemSize = ?2")
+public interface OutwardRepository extends JpaRepository<Outward, OutwardId> {
+    @Query("select i from Outward i where i.outwardId.outwardItemType = ?1 and i.outwardId.outwardItemSize = ?2")
     List<Outward> getOutwardByItemTypeAndItemSize(String itemType, int itemSize);
 
-    @Query("select i from Outward i where i.outwardItemSize = ?1")
+    @Query("select i from Outward i where i.outwardId.outwardItemSize = ?1")
     List<Outward> getOutwardByItemSize(int itemSize);
 
-    @Query("select i from Outward i where i.outwardItemType = ?1")
+    @Query("select i from Outward i where i.outwardId.outwardItemType = ?1")
     List<Outward> getOutwardByItemType(String itemType);
 }
