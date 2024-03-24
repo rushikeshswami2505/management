@@ -2,7 +2,7 @@ let inwardBtn = document.getElementById("inwardBtn");
 let outwardBtn = document.getElementById("outwardBtn");
 let searchBtn = document.getElementById("searchBtn");
 let toast = document.getElementById("toast");
-const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast);
+
 
 inwardBtn.addEventListener('click', function() {
     document.getElementById('outward').classList.remove('active');
@@ -31,6 +31,62 @@ searchBtn.addEventListener('click',function(){
     searchBtn.classList.add('btn-active');
 });
 
+//////////////////////GET ITEM LIST ON LOAD PAGE////////////////////
+let fullItemList;
+
+// Call the function to fetch items list
+getItemsList();
+
+function getItemsList() {
+    fetch('/getItemsList')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            fullItemList = data;
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+}
+///////////////////////////Modal//////////////////
+document.getElementById("itemForm").addEventListener('submit',function(event){
+    event.preventDefault();
+    var formData = new FormData(document.getElementById("itemForm"));
+    var itemSize = formData.get('itemSize');
+    var itemType = formData.get('itemType');
+    jsonObject = {};
+    itemsId = {};
+    itemsId["itemSize"] = itemSize;
+    itemsId["itemType"] = itemType;
+    jsonObject["itemsId"] = itemsId;
+
+    if(!itemSize || !itemType){
+       customToast("Please enter valid data",0);
+       return;
+    }
+    fetch('/addItem', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(jsonObject)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+    customToast("New Item Added",1);
+    document.getElementById("closeItemModel").click();
+})
+
 //////////////////////////INWARD//////////////////////////////////////////////
 document.getElementById("inwardDozen").addEventListener("input", function() {
         var val = document.getElementById("inwardDozen").value;
@@ -58,44 +114,37 @@ document.getElementById('inwardForm').addEventListener('submit', function(event)
     var inwardDozen = formData.get('inwardDozen');
     var inwardPiece = formData.get('inwardPiece');
     if(!inwardMemoNumber || !inwardDate || !inwardItemSize || !inwardItemType || !inwardDozen || !inwardPiece){
-        toastText = document.getElementById("toastMessage");
-        toastText.innerText = "Please enter valid data";
-        toastText.classList.remove("text-bg-success");
-        toastText.classList.add("text-bg-danger");
-        toastBootstrap.show();
+        customToast("Please enter valid data",0);
         return;
     }
 
-    // Create a new table row
-    var newRow = document.createElement('tr');
+    let checkInwardContain = false;
+    if (fullItemList) { // Ensure fullItemList is not null or undefined
+        for (var i = 0; i < fullItemList.length; i++) {
+            if (fullItemList[i].itemsId.itemSize == inwardItemSize && fullItemList[i].itemsId.itemType === inwardItemType) {
+                checkInwardContain = true;
+                break;
+            }
+        }
+    }
+    if (!checkInwardContain) {
+        customToast("Type and Size are not available",0);
+        return;
+    }
 
-    // Populate the new row with table data
-    newRow.innerHTML = `
-        <th scope="row">${document.querySelector(".inward-table-body").children.length + 1}</th>
-        <td>${inwardMemoNumber}</td>
-        <td>${inwardDate}</td>
-        <td>${inwardItemSize}</td>
-        <td>${inwardItemType}</td>
-        <td>${inwardDozen}</td>
-        <td>${inwardPiece}</td>
-    `;
-
-    // Append the new row to the end of the table body
-    document.querySelector(".inward-table-body").appendChild(newRow);
-
-    // Log the form data
-    console.log(newRow);
-
-    // Convert form data to JSON
     var jsonObject = {};
-    jsonObject["inwardMemoNumber"] = inwardMemoNumber;
-    jsonObject["inwardDate"] = inwardDate;
+    var inwardId = {};
 
-    formData.forEach(function(value, key){
-        jsonObject[key] = value;
-    });
+    // Populate inwardId object with values
+    inwardId["inwardMemoNumber"] = document.getElementById("inwardMemoNumber").value;
+    inwardId["inwardItemSize"] = document.getElementById("inwardItemSize").value;
+    inwardId["inwardItemType"] = document.getElementById("inwardItemType").value;
 
-    console.log(jsonObject);
+    // Populate jsonObject with other values
+    jsonObject["inwardDate"] = document.getElementById("inwardDate").value;
+    jsonObject["inwardDozen"] = document.getElementById("inwardDozen").value;
+    jsonObject["inwardPiece"] = document.getElementById("inwardPiece").value;
+    jsonObject["inwardId"] = inwardId;
     fetch('/addInward', {
         method: 'POST',
         headers: {
@@ -107,18 +156,30 @@ document.getElementById('inwardForm').addEventListener('submit', function(event)
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        console.log('Inward data submitted successfully');
-        return;
+        return response.json(); // Parse the response as JSON
+    })
+    .then(data => {
+        if (data === 1) {
+        customToast("New inward record added", 1);
+        var newRow = document.createElement('tr');
+        newRow.innerHTML = `
+        <th scope="row">${document.querySelector(".inward-table-body").children.length + 1}</th>
+        <td>${inwardMemoNumber}</td>
+        <td>${inwardDate}</td>
+        <td>${inwardItemSize}</td>
+        <td>${inwardItemType}</td>
+        <td>${inwardDozen}</td>
+        <td>${inwardPiece}</td>
+        `;
+        document.querySelector(".inward-table-body").appendChild(newRow);
+        } else {
+        customToast("Item already present", 0);
+        }
     })
     .catch(error => {
         console.error('Error:', error);
-        return;
     });
-    toastText = document.getElementById("toastMessage");
-    toastText.innerText = "New inward record added";
-    toastText.classList.remove("text-bg-danger");
-    toastText.classList.add("text-bg-success");
-    toastBootstrap.show();
+
 });
 document.getElementById("addNewInwardItem").addEventListener('click', function(){
     document.getElementById('inwardForm').reset();
@@ -156,41 +217,38 @@ document.getElementById('outwardForm').addEventListener('submit', function(event
     var outwardPiece = formData.get('outwardPiece');
 
     if(!outwardBailNumber || !outwardDate || !outwardItemSize || !outwardItemType || !outwardDozen || !outwardPiece){
-        toastText = document.getElementById("toastMessage");
-        toastText.innerText = "Please enter valid data";
-        toastText.classList.remove("text-bg-success");
-        toastText.classList.add("text-bg-danger");
-        toastBootstrap.show();
+        customToast("Please enter valid data",0);
         return;
     }
-    // Create a new table row
-    var newRow = document.createElement('tr');
 
-    // Populate the new row with table data
-    newRow.innerHTML = `
-        <th scope="row">${document.querySelector(".outward-table-body").children.length + 1}</th>
-        <td>${outwardBailNumber}</td>
-        <td>${outwardDate}</td>
-        <td>${outwardItemSize}</td>
-        <td>${outwardItemType}</td>
-        <td>${outwardDozen}</td>
-        <td>${outwardPiece}</td>
-    `;
-
-    // Append the new row to the end of the table body
-    document.querySelector(".outward-table-body").appendChild(newRow);
-
-    // Log the form data
-    console.log(newRow);
+    let checkOutwardContain = false;
+    if (fullItemList) { // Ensure fullItemList is not null or undefined
+        for (var i = 0; i < fullItemList.length; i++) {
+            if (fullItemList[i].itemsId.itemSize == outwardItemSize && fullItemList[i].itemsId.itemType === outwardItemType) {
+                checkOutwardContain = true;
+                break;
+            }
+        }
+    }
+    if (!checkOutwardContain) {
+        customToast("Type and Size are not available",0);
+        return;
+    }
 
     // Convert form data to JSON
     var jsonObject = {};
-    jsonObject["outwardBailNumber"] = outwardBailNumber;
-    jsonObject["outwardDate"] = outwardDate;
+    var outwardId= {};
 
-    formData.forEach(function(value, key){
-        jsonObject[key] = value;
-    });
+    // Populate inwardId object with values
+    outwardId["outwardBailNumber"] = document.getElementById("outwardBailNumber").value;
+    outwardId["outwardItemSize"] = document.getElementById("outwardItemSize").value;
+    outwardId["outwardItemType"] = document.getElementById("outwardItemType").value;
+
+    // Populate jsonObject with other values
+    jsonObject["outwardDate"] = document.getElementById("outwardDate").value;
+    jsonObject["outwardDozen"] = document.getElementById("outwardDozen").value;
+    jsonObject["outwardPiece"] = document.getElementById("outwardPiece").value;
+    jsonObject["outwardId"] = outwardId;
 
     console.log(jsonObject);
 
@@ -205,16 +263,30 @@ document.getElementById('outwardForm').addEventListener('submit', function(event
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        console.log('Outward data submitted successfully');
+        return response.json(); // Parse the response as JSON
+    })
+    .then(data => {
+        if (data === 1) {
+            customToast("New outward record added",1);
+            var newRow = document.createElement('tr');
+            newRow.innerHTML = `
+            <th scope="row">${document.querySelector(".outward-table-body").children.length + 1}</th>
+            <td>${outwardBailNumber}</td>
+            <td>${outwardDate}</td>
+            <td>${outwardItemSize}</td>
+            <td>${outwardItemType}</td>
+            <td>${outwardDozen}</td>
+            <td>${outwardPiece}</td>
+            `;
+            document.querySelector(".outward-table-body").appendChild(newRow);
+        } else {
+            customToast("Item already present", 0);
+        }
     })
     .catch(error => {
         console.error('Error:', error);
     });
-    toastText = document.getElementById("toastMessage");
-    toastText.innerText = "New outward record added";
-    toastText.classList.remove("text-bg-danger");
-    toastText.classList.add("text-bg-success");
-    toastBootstrap.show();
+
 });
 document.getElementById("addNewOutwardItem").addEventListener('click', function(){
     document.getElementById('outwardForm').reset();
@@ -257,11 +329,12 @@ function handleFormSubmit(event) {
     let searchItemType = document.getElementById("searchItemType");
     let searchType = inwardRadio.checked ? "searchInwardItem" : outwardRadio.checked? "searchOutwardItem" : "searchAllItem";
 
-    var jsonObject = {
+    var itemsIdObject = {
         "itemSize": searchItemSize.value,
         "itemType": searchItemType.value
     };
-
+    jsonObject = {};
+    jsonObject["itemsId"] = itemsIdObject;
     fetch(`/${searchType}`, {
         method: 'POST',
         headers: {
@@ -286,34 +359,42 @@ function handleFormSubmit(event) {
 function displayItems(items) {
     const tableBody = document.querySelector(".search-table-body");
     tableBody.innerHTML = ""; // Clear existing rows
-
+    var rowId=1;
     items.forEach(item => {
         var newRow = document.createElement('tr');
-        newRow.innerHTML = `<th scope="row">${item.inwardId || item.outwardId || item.itemId}</th>
-                          <td>${item.inwardMemoNumber || item.outwardBailNumber || item.itemSize}</td>
-                          <td>${item.inwardDate || item.outwardDate || item.itemType}</td>
-                          <td>${item.inwardItemSize || item.outwardItemSize || ""}</td>
-                          <td>${item.inwardItemType || item.outwardItemType|| ""}</td>
+
+        newRow.innerHTML = `<th scope="row">${rowId++}</th>
+                          <td>${item.inwardId?.inwardMemoNumber || item.outwardId?.outwardBailNumber || item.itemsId?.itemSize}</td>
+                          <td>${item.inwardDate || item.outwardDate || item.itemsId?.itemType}</td>
+                          <td>${item.inwardId?.inwardItemSize || item.outwardId?.outwardItemSize || ""}</td>
+                          <td>${item.inwardId?.inwardItemType || item.outwardId?.outwardItemType || ""}</td>
                           <td>${item.inwardDozen || item.outwardDozen || ""}</td>
                           <td>${item.inwardPiece || item.outwardPiece || ""}</td>`;
         tableBody.appendChild(newRow);
     });
     if(items.length){
-        toastText = document.getElementById("toastMessage");
-        toastText.innerText = "Record Found";
-        toastText.classList.remove("text-bg-danger");
-        toastText.classList.add("text-bg-success");
+        customToast("No Record Found",1);
     }else{
-        toastText = document.getElementById("toastMessage");
-        toastText.innerText = "No Record Found";
-        toastText.classList.remove("text-bg-primary");
-        toastText.classList.add("text-bg-danger");
+        customToast("No Record Found",0);
     }
-    toastBootstrap.show();
 }
 
 //////////////////////////////SEARCH END///////////////////////////////////////////////
 
+////////////CUSTOM TOAST///////////////////
+function customToast(msg,status){
+    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast);
+    toastText = document.getElementById("toastMessage");
+    toastText.innerText = msg;
+    if(status===1){
+        toastText.classList.remove("text-bg-danger");
+        toastText.classList.add("text-bg-success");
+    }else{
+        toastText.classList.add("text-bg-danger");
+        toastText.classList.remove("text-bg-success");
+    }
+    toastBootstrap.show();
+}
 
 //document.getElementById('addProductBtn').addEventListener('click', function() {
 //    var existingForm = document.getElementById('originalForm');

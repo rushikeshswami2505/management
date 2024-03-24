@@ -311,7 +311,7 @@
                 <h5 class="modal-title fs-5">Add New Item</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="/addItem" method="POST">
+            <form id="itemForm">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="itemSize" class="form-label">Item Size</label>
@@ -329,7 +329,7 @@
                     </div>
                 </div>
                 <div class="modal-footer align-items-end">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" id="closeItemModel" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Add Item</button>
                 </div>
             </form>
