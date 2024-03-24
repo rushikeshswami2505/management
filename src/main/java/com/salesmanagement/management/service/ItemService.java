@@ -25,4 +25,7 @@ public class ItemService {
         else if(itemSize == 0) return itemsRepository.getItemsByItemType(itemType);
         else return itemsRepository.getItemsByItemTypeAndItemSize(itemType,itemSize);
     }
+    public List<Items> getAllItemsList() {
+        return itemsRepository.findAll();
+    }
 }

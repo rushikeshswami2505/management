@@ -1,5 +1,6 @@
 package com.salesmanagement.management.repository;
 
+import com.salesmanagement.management.entity.inward.Inward;
 import com.salesmanagement.management.entity.outward.Outward;
 import com.salesmanagement.management.entity.outward.OutwardId;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,6 @@ public interface OutwardRepository extends JpaRepository<Outward, OutwardId> {
 
     @Query("select i from Outward i where i.outwardId.outwardItemType = ?1")
     List<Outward> getOutwardByItemType(String itemType);
+
+    Outward findByOutwardIdAndOutwardDateAndOutwardDozenAndOutwardPiece(OutwardId outwardId, String outwardDate, float outwardDozen, int outwardPiece);
 }

@@ -1,6 +1,7 @@
 package com.salesmanagement.management.service;
 
 import com.salesmanagement.management.entity.inward.Inward;
+import com.salesmanagement.management.entity.inward.InwardId;
 import com.salesmanagement.management.repository.InwardRepository;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,4 +28,14 @@ public class InwardService {
         else return inwardRepository.getInwardByItemTypeAndItemSize(itemType, itemSize);
     }
 
+    public boolean isInwardAlreadyContainsItem(Inward inward) {
+        InwardId inwardId = inward.getInwardId();
+        String inwardDate = inward.getInwardDate();
+        float inwardDozen = inward.getInwardDozen();
+        int inwardPiece = inward.getInwardPiece();
+        Inward existingInward = inwardRepository.findByInwardIdAndInwardDateAndInwardDozenAndInwardPiece(
+                inwardId, inwardDate, inwardDozen, inwardPiece);
+
+        return existingInward != null;
+    }
 }

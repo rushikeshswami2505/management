@@ -33,27 +33,31 @@ public class MainController {
 
     @PostMapping("/addItem")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addItem(@RequestParam("itemSize") String itemSize,
-                        @RequestParam("itemType") String itemType) {
-        ItemsId itemsId = new ItemsId();
-        itemsId.setItemSize(Integer.parseInt(itemSize));
-        itemsId.setItemType(itemType);
-        Items item = new Items();
-        item.setItemsId(itemsId);
-        itemService.addNewItem(item);
+    public void addItem(@RequestBody Items items) {
+        itemService.addNewItem(items);
+    }
+
+    @GetMapping("/getItemsList")
+    public ResponseEntity<List<Items>> getItemsList()
+    {
+       List<Items> SearchQ = itemService.getAllItemsList();
+       return ResponseEntity.ok(SearchQ);
     }
 
     @PostMapping("/addInward")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addInward(@RequestBody Inward inward) {
-        System.out.println(inward.getInwardId().getInwardItemSize());
+    public ResponseEntity<Integer> addInward(@RequestBody Inward inward) {
+        if(inwardService.isInwardAlreadyContainsItem(inward)) return ResponseEntity.ok(0);
         inwardService.addInward(inward);
+        return ResponseEntity.ok(1);
     }
 
     @PostMapping("/addOutward")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addOutward(@RequestBody Outward outward){
+    public ResponseEntity<Integer> addOutward(@RequestBody Outward outward){
+        if(outwardService.isOutwardAlreadyContainsItem(outward)) return ResponseEntity.ok(0);
         outwardService.addOutward(outward);
+        return ResponseEntity.ok(1);
     }
 
     @PostMapping("/searchInwardItem")

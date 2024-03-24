@@ -17,4 +17,6 @@ public interface InwardRepository extends JpaRepository<Inward, InwardId> {
 
     @Query("select i from Inward i where i.inwardId.inwardItemType = ?1")
     List<Inward> getInwardByItemType(String itemType);
+
+    Inward findByInwardIdAndInwardDateAndInwardDozenAndInwardPiece(InwardId inwardId, String inwardDate, float inwardDozen, int inwardPiece);
 }
