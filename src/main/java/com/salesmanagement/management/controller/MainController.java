@@ -44,21 +44,60 @@ public class MainController {
        return ResponseEntity.ok(SearchQ);
     }
 
+//    @PostMapping("/addInward")
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    public ResponseEntity<Integer> addInward(@RequestBody Inward inward) {
+//        if (inward.getInwardId() == null) return ResponseEntity.ok(0);
+//        if (inwardService.isInwardAlreadyContainsItem(inward)) return ResponseEntity.ok(0);
+//        inwardService.addInward(inward);
+//        return ResponseEntity.ok(1);
+//    }
+
     @PostMapping("/addInward")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Integer> addInward(@RequestBody Inward inward) {
-        if(inwardService.isInwardAlreadyContainsItem(inward)) return ResponseEntity.ok(0);
+        if (inward.getInwardId() == null) {
+            return ResponseEntity.ok(0); // Handle the case where InwardId is not set
+        }
+
+        // Check if the inward already exists
+        if (inwardService.isInwardAlreadyContainsItem(inward)) {
+            return ResponseEntity.ok(0);
+        }
+
+        // Save the inward
         inwardService.addInward(inward);
+        System.out.println(inward.getInwardId());
         return ResponseEntity.ok(1);
     }
 
+
+//    @PostMapping("/addOutward")
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    public ResponseEntity<Integer> addOutward(@RequestBody Outward outward){
+//        if (outward.getOutwardId() == null) return ResponseEntity.ok(0);
+//        if(outwardService.isOutwardAlreadyContainsItem(outward)) return ResponseEntity.ok(0);
+//        outwardService.addOutward(outward);
+//        return ResponseEntity.ok(1);
+//    }
+
     @PostMapping("/addOutward")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<Integer> addOutward(@RequestBody Outward outward){
-        if(outwardService.isOutwardAlreadyContainsItem(outward)) return ResponseEntity.ok(0);
+    public ResponseEntity<Integer> addOutward(@RequestBody Outward outward) {
+        if (outward.getOutwardId() == null) {
+            return ResponseEntity.ok(0); // Handle the case where OutwardId is not set
+        }
+
+        // Check if the outward already exists
+        if (outwardService.isOutwardAlreadyContainsItem(outward)) {
+            return ResponseEntity.ok(0);
+        }
+
+        // Save the outward
         outwardService.addOutward(outward);
         return ResponseEntity.ok(1);
     }
+
 
     @PostMapping("/searchInwardItem")
     @ResponseStatus(HttpStatus.NO_CONTENT)

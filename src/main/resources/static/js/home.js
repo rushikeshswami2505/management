@@ -85,6 +85,7 @@ document.getElementById("itemForm").addEventListener('submit',function(event){
     });
     customToast("New Item Added",1);
     document.getElementById("closeItemModel").click();
+    getItemsList();
 })
 
 //////////////////////////INWARD//////////////////////////////////////////////
@@ -311,16 +312,17 @@ function handleRadioChange(event) {
     const thElements = document.querySelectorAll('.tableSearchType th');
     let newHeaderNames;
     if (inwardRadio.checked) {
-        newHeaderNames = ['#', 'Memo Number', 'Date', 'Item Size', 'Item Type', 'Dozen', 'Piece'];
+        newHeaderNames = ['Edit', '#', 'Memo Number', 'Date', 'Item Size', 'Item Type', 'Dozen', 'Piece'];
     } else if (outwardRadio.checked) {
-        newHeaderNames = ['#', 'Bail Number', 'Date', 'Item Size', 'Item Type', 'Dozen', 'Piece'];
+        newHeaderNames = ['Edit', '#', 'Bail Number', 'Date', 'Item Size', 'Item Type', 'Dozen', 'Piece'];
     }
     else{
-        newHeaderNames = ['#', 'Item Size', 'Item Type','','','',''];
+        newHeaderNames = ['Edit', '#', 'Item Size', 'Item Type','','','',''];
     }
     thElements.forEach((th, index) => {
             th.innerHTML = newHeaderNames[index];
         });
+    handleFormSubmit(event);
 }
 
 function handleFormSubmit(event) {
@@ -349,6 +351,11 @@ function handleFormSubmit(event) {
         return response.json();
     })
     .then(data => {
+        if (data.length) {
+            customToast("Record Found", 1);
+        } else {
+            customToast("No Record Found", 0);
+        }
         displayItems(data);
     })
     .catch(error => {
@@ -359,24 +366,110 @@ function handleFormSubmit(event) {
 function displayItems(items) {
     const tableBody = document.querySelector(".search-table-body");
     tableBody.innerHTML = ""; // Clear existing rows
-    var rowId=1;
+    var rowId = 1;
     items.forEach(item => {
         var newRow = document.createElement('tr');
 
-        newRow.innerHTML = `<th scope="row">${rowId++}</th>
+        newRow.innerHTML = `<td><i class="edit-pension-icon fas fa-pencil-alt"></i><i class="ms-3 save-icon fas fa-save"></i></td>
+                          <th scope="row">${rowId++}</th>
                           <td>${item.inwardId?.inwardMemoNumber || item.outwardId?.outwardBailNumber || item.itemsId?.itemSize}</td>
                           <td>${item.inwardDate || item.outwardDate || item.itemsId?.itemType}</td>
                           <td>${item.inwardId?.inwardItemSize || item.outwardId?.outwardItemSize || ""}</td>
                           <td>${item.inwardId?.inwardItemType || item.outwardId?.outwardItemType || ""}</td>
                           <td>${item.inwardDozen || item.outwardDozen || ""}</td>
                           <td>${item.inwardPiece || item.outwardPiece || ""}</td>`;
+
+        const editPensionIcon = newRow.querySelector('.edit-pension-icon');
+
+        // Add click event listener to the edit pension icon
+        editPensionIcon.addEventListener('click', () => {
+            // Replace row content with input fields for editing
+            newRow.innerHTML = `<td><i class="edit-pension-icon fas fa-pencil-alt"></i><i class="ms-3 save-icon fas fa-save"></i></td>
+                               <th scope="row">${rowId}</th>
+                               <td><input class="edit-input form-control" type="text" value="${item.inwardId?.inwardMemoNumber || item.outwardId?.outwardBailNumber || item.itemsId?.itemSize}"></td>
+                               <td><input class="edit-input form-control" type="text" value="${item.inwardDate || item.outwardDate || item.itemsId?.itemType}"></td>
+                               <td><input class="edit-input form-control" type="text" value="${item.inwardId?.inwardItemSize || item.outwardId?.outwardItemSize || ""}"></td>
+                               <td><input class="edit-input form-control" type="text" value="${item.inwardId?.inwardItemType || item.outwardId?.outwardItemType || ""}"></td>
+                               <td><input class="edit-input form-control" type="text" value="${item.inwardDozen || item.outwardDozen || ""}"></td>
+                               <td><input class="edit-input form-control" type="text" value="${item.inwardPiece || item.outwardPiece || ""}"></td>`;
+            if(item.itemsId)
+            newRow.innerHTML = `<td><i class="edit-pension-icon fas fa-pencil-alt"></i><i class="ms-3 save-icon fas fa-save"></i></td>
+                                           <th scope="row">${rowId}</th>
+                                           <td><input class="edit-input" type="text" value="${item.inwardId?.inwardMemoNumber || item.outwardId?.outwardBailNumber || item.itemsId?.itemSize}"></td>
+                                           <td><input class="edit-input" type="text" value="${item.inwardDate || item.outwardDate || item.itemsId?.itemType}"></td>
+                                           <td></td>
+                                           <td></td>
+                                           <td></td>
+                                           <td></td>`;
+
+            const editInputs = newRow.querySelectorAll('.edit-input');
+            const saveIcon = newRow.querySelector('.save-icon');
+
+            // Toggle save icon visibility
+            editPensionIcon.style.display = 'none';
+            saveIcon.style.display = 'inline';
+
+            // Add event listener to save icon
+            saveIcon.addEventListener('click', () => {
+                // Update the item data with user input
+                if (item.inwardId) {
+                    item.inwardId.inwardMemoNumber = editInputs[0].value;
+                    item.inwardDate = editInputs[1].value;
+                    item.inwardId.inwardItemSize = editInputs[2].value;
+                    item.inwardId.inwardItemType = editInputs[3].value;
+                    item.inwardDozen = editInputs[4].value;
+                    item.inwardPiece = editInputs[5].value;
+                }
+                else if (item.outwardId) {
+                    item.outwardId.outwardBailNumber = editInputs[0].value;
+                    item.outwardDate = editInputs[1].value;
+                    item.outwardId.outwardItemSize = editInputs[2].value;
+                    item.outwardId.outwardItemType = editInputs[3].value;
+                    item.outwardDozen = editInputs[4].value;
+                    item.outwardPiece = editInputs[5].value;
+                }
+                else if (item.itemsId) {
+                    item.itemsId.itemSize = editInputs[0].value;
+                    item.inwardDate = editInputs[1].value;
+                }
+
+
+                // Replace input fields with text nodes containing edited values
+                newRow.innerHTML = `<td><i class="edit-pension-icon fas fa-pencil-alt"></i><i class="ms-3 save-icon fas fa-save"></i></td>
+                               <th scope="row">${rowId}</th>
+                               <td>${item.inwardId?.inwardMemoNumber || item.outwardId?.outwardBailNumber || item.itemsId?.itemSize}</td>
+                               <td>${item.inwardDate || item.outwardDate || item.itemsId?.itemType}</td>
+                               <td>${item.inwardId?.inwardItemSize || item.outwardId?.outwardItemSize || ""}</td>
+                               <td>${item.inwardId?.inwardItemType || item.outwardId?.outwardItemType || ""}</td>
+                               <td>${item.inwardDozen || item.outwardDozen || ""}</td>
+                               <td>${item.inwardPiece || item.outwardPiece || ""}</td>`;
+
+                // Re-render the table to reflect the changes
+                displayItems(items);
+            });
+        });
+
         tableBody.appendChild(newRow);
     });
-    if(items.length){
-        customToast("No Record Found",1);
-    }else{
-        customToast("No Record Found",0);
-    }
+
+}
+function updateTable(call,jsonObject){
+    fetch(call, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(jsonObject)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json(); // Parse the response as JSON
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
 
 //////////////////////////////SEARCH END///////////////////////////////////////////////
