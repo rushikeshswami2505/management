@@ -33,8 +33,12 @@ public class MainController {
 
     @PostMapping("/addItem")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addItem(@RequestBody Items items) {
+    public ResponseEntity<Void> addItem(@RequestBody Items items) {
+        if (items.getItemsId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
         itemService.addNewItem(items);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/getItemsList")
@@ -43,19 +47,10 @@ public class MainController {
        List<Items> SearchQ = itemService.getAllItemsList();
        return ResponseEntity.ok(SearchQ);
     }
-
-//    @PostMapping("/addInward")
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    public ResponseEntity<Integer> addInward(@RequestBody Inward inward) {
-//        if (inward.getInwardId() == null) return ResponseEntity.ok(0);
-//        if (inwardService.isInwardAlreadyContainsItem(inward)) return ResponseEntity.ok(0);
-//        inwardService.addInward(inward);
-//        return ResponseEntity.ok(1);
-//    }
-
     @PostMapping("/addInward")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Integer> addInward(@RequestBody Inward inward) {
+        System.out.println("inward called "+inward);
         if (inward.getInwardId() == null) {
             return ResponseEntity.ok(0); // Handle the case where InwardId is not set
         }
@@ -67,19 +62,29 @@ public class MainController {
 
         // Save the inward
         inwardService.addInward(inward);
-        System.out.println(inward.getInwardId());
+        return ResponseEntity.ok(1);
+    }
+    @PostMapping("/updateInward")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<Integer> updateInward(@RequestBody Inward inward) {
+        if (inward.getInwardId() == null) {
+            return ResponseEntity.ok(0);
+        }
+        inwardService.updateInward(inward);
         return ResponseEntity.ok(1);
     }
 
-
-//    @PostMapping("/addOutward")
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    public ResponseEntity<Integer> addOutward(@RequestBody Outward outward){
-//        if (outward.getOutwardId() == null) return ResponseEntity.ok(0);
-//        if(outwardService.isOutwardAlreadyContainsItem(outward)) return ResponseEntity.ok(0);
-//        outwardService.addOutward(outward);
-//        return ResponseEntity.ok(1);
-//    }
+    @PostMapping("/deleteInward")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Integer> deleteInward(@RequestBody Inward inward) {
+        System.out.println("delete called "+inward);
+        if (inward.getInwardId() == null) {
+            return ResponseEntity.ok(0);
+        }
+        inwardService.deleteInward(inward);
+        System.out.println("item deleted");
+        return ResponseEntity.ok(1);
+    }
 
     @PostMapping("/addOutward")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -97,8 +102,6 @@ public class MainController {
         outwardService.addOutward(outward);
         return ResponseEntity.ok(1);
     }
-
-
 
     @PostMapping("/searchInwardItem")
     @ResponseStatus(HttpStatus.NO_CONTENT)

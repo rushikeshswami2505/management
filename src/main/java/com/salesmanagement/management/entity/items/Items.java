@@ -11,6 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Items {
+
     @EmbeddedId
     private ItemsId itemsId;
 }

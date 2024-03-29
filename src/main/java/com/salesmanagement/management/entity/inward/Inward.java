@@ -8,7 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Inward {
-
     @EmbeddedId
     private InwardId inwardId;
 
