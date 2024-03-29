@@ -1,5 +1,7 @@
 package com.salesmanagement.management.repository;
 
+import com.salesmanagement.management.entity.inward.Inward;
+import com.salesmanagement.management.entity.inward.InwardId;
 import com.salesmanagement.management.entity.items.Items;
 import com.salesmanagement.management.entity.items.ItemsId;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +19,6 @@ public interface ItemsRepository extends JpaRepository<Items, ItemsId> {
 
     @Query("select i from Items i where i.itemsId.itemType = ?1")
     List<Items> getItemsByItemType(String itemType);
+
+    Items findByItemsId(ItemsId itemsId);
 }

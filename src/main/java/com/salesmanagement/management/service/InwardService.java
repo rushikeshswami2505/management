@@ -6,6 +6,7 @@ import com.salesmanagement.management.repository.InwardRepository;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -35,7 +36,31 @@ public class InwardService {
         int inwardPiece = inward.getInwardPiece();
         Inward existingInward = inwardRepository.findByInwardIdAndInwardDateAndInwardDozenAndInwardPiece(
                 inwardId, inwardDate, inwardDozen, inwardPiece);
-
         return existingInward != null;
+    }
+
+    @Transactional
+    public void updateInward(Inward inward) {
+        // Retrieve the existing inward entity from the database
+        Inward existingInward = inwardRepository.findByInwardId(inward.getInwardId());
+
+        // Check if the existing inward entity exists
+        if (existingInward != null) {
+            // Update the properties of the existing inward entity with the values from the provided inward entity
+            existingInward.setInwardDate(inward.getInwardDate());
+            existingInward.setInwardDozen(inward.getInwardDozen());
+            existingInward.setInwardPiece(inward.getInwardPiece());
+
+            // Save the updated inward entity to the database
+            inwardRepository.save(existingInward);
+        }
+    }
+    @Transactional
+    public void deleteInward(Inward inward) {
+        Inward getInward = inwardRepository.findByInwardId(inward.getInwardId());
+        System.out.println("inward SERVICE: "+inward.getInwardId());
+        if (getInward != null) {
+            inwardRepository.delete(getInward);
+        }
     }
 }

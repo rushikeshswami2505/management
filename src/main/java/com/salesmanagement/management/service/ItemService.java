@@ -1,9 +1,12 @@
 package com.salesmanagement.management.service;
 
+import com.salesmanagement.management.entity.inward.Inward;
 import com.salesmanagement.management.entity.items.Items;
+import com.salesmanagement.management.entity.outward.Outward;
 import com.salesmanagement.management.repository.ItemsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,5 +30,13 @@ public class ItemService {
     }
     public List<Items> getAllItemsList() {
         return itemsRepository.findAll();
+    }
+
+    @Transactional
+    public void deleteItem(Items item) {
+        Items getItems = itemsRepository.findByItemsId(item.getItemsId());
+        if (getItems != null) {
+            itemsRepository.delete(getItems);
+        }
     }
 }
