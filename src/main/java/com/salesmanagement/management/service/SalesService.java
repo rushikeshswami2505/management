@@ -5,6 +5,7 @@ import com.salesmanagement.management.entity.outward.Outward;
 import com.salesmanagement.management.entity.sales.Sales;
 import com.salesmanagement.management.entity.sales.SalesId;
 import com.salesmanagement.management.repository.SalesRepository;
+import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +26,19 @@ public class SalesService {
     public void updateSalesOnInwardAddition(Inward inward) {
         updateSales(inward.getInwardId().getInwardItemType(), inward.getInwardId().getInwardItemSize(), inward.getInwardDozen(), inward.getInwardPiece());
     }
-
     @Transactional
     public void updateSalesOnOutwardAddition(Outward outward) {
         updateSales(outward.getOutwardId().getOutwardItemType(), outward.getOutwardId().getOutwardItemSize(), -outward.getOutwardDozen(), -outward.getOutwardPiece());
+    }
+
+    @Transactional
+    public void updateSalesOnOutwardDeletion(Outward outward) {
+        updateSales(outward.getOutwardId().getOutwardItemType(),outward.getOutwardId().getOutwardItemSize(),outward.getOutwardDozen(),outward.getOutwardPiece());
+    }
+
+    @Transactional
+    public void updateSalesOnInwardDeletion(Inward inward) {
+        updateSales(inward.getInwardId().getInwardItemType(),inward.getInwardId().getInwardItemSize(),-inward.getInwardDozen(),-inward.getInwardPiece());
     }
 
     private void updateSales(String itemType, int itemSize, float dozenChange, int pieceChange) {
@@ -45,9 +55,14 @@ public class SalesService {
         salesRepository.save(existingSales);
     }
 
-    // Additional methods for other operations on the Sales table can be added here
-}
 
+    public List<Sales> searchSalesByTypeAndSize(String itemType, int itemSize) {
+        if ((itemType == null || StringUtils.isEmpty(itemType)) && itemSize == 0) return salesRepository.findAll();
+        else if (itemType == null || StringUtils.isEmpty(itemType)) return salesRepository.getSalesByItemSize(itemSize);
+        else if (itemSize == 0) return salesRepository.getSalesByItemType(itemType);
+        else return salesRepository.getSalesByItemTypeAndItemSize(itemType, itemSize);
+    }
+}
 
 //public void calculateAndSaveAvailableItems() {
 //    List<Inward> inwardList = inwardRepository.findAll();

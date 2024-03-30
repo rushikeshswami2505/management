@@ -98,14 +98,14 @@ document.getElementById("itemForm").addEventListener('submit', function(event) {
 document.getElementById("inwardDozen").addEventListener("input", function() {
         var val = document.getElementById("inwardDozen").value;
         if(!val) return;
-        var dozenValue = parseInt(val);
+        var dozenValue = parseFloat(val);
         var pieceValue = dozenValue * 12;
         document.getElementById("inwardPiece").value = pieceValue;
 });
 document.getElementById("inwardPiece").addEventListener("input", function() {
-        var val = document.getElementById("inwardDozen").value;
+        var val = document.getElementById("inwardPiece").value;
         if(!val) return;
-        var dozenValue = parseInt(val);
+        var dozenValue = parseFloat(val);
         var pieceValue = Math.round(dozenValue/12 * 10 ** 2) / 10 ** 2;
         document.getElementById("inwardDozen").value = pieceValue;
 });
@@ -205,7 +205,7 @@ document.getElementById("outwardDozen").addEventListener("input", function() {
         document.getElementById("outwardPiece").value = pieceValue;
 });
 document.getElementById("outwardPiece").addEventListener("input", function() {
-        var val = document.getElementById("outwardDozen").value;
+        var val = document.getElementById("outwardPiece").value;
         if(!val) return;
         var dozenValue = parseInt(val);
         var pieceValue = Math.round(dozenValue/12 * 10 ** 2) / 10 ** 2;
@@ -307,11 +307,13 @@ document.getElementById("addNewOutwardItem").addEventListener('click', function(
 const inwardRadio = document.getElementById('searchInward');
 const outwardRadio = document.getElementById('searchOutward');
 const searchAllItemsRadio = document.getElementById('searchAllItems');
+const searchSalesRadio = document.getElementById('searchSales');
 const searchForm = document.getElementById("searchForm");
 
 inwardRadio.addEventListener('change', handleRadioChange);
 outwardRadio.addEventListener('change', handleRadioChange);
 searchAllItemsRadio.addEventListener('change', handleRadioChange);
+searchSalesRadio.addEventListener('change', handleRadioChange);
 searchForm.addEventListener('submit', handleFormSubmit);
 
 function handleRadioChange(event) {
@@ -322,8 +324,11 @@ function handleRadioChange(event) {
     } else if (outwardRadio.checked) {
         newHeaderNames = ['Edit', '#', 'Bail Number', 'Date', 'Item Size', 'Item Type', 'Dozen', 'Piece'];
     }
-    else{
+    else if(searchAllItemsRadio.checked){
         newHeaderNames = ['Edit', '#', 'Item Size', 'Item Type','','','',''];
+    }
+    else{
+        newHeaderNames = ['Edit', '#', 'Item Size', 'Item Type','Dozen','Piece','',''];
     }
     thElements.forEach((th, index) => {
             th.innerHTML = newHeaderNames[index];
@@ -335,7 +340,7 @@ function handleFormSubmit(event) {
     event.preventDefault();
     let searchItemSize = document.getElementById("searchItemSize");
     let searchItemType = document.getElementById("searchItemType");
-    let searchType = inwardRadio.checked ? "searchInwardItem" : outwardRadio.checked? "searchOutwardItem" : "searchAllItem";
+    let searchType = inwardRadio.checked ? "searchInwardItem" : outwardRadio.checked? "searchOutwardItem" : searchAllItemsRadio.checked? "searchAllItem" : "searchSalesItem";;
 
     var itemsIdObject = {
         "itemSize": searchItemSize.value,
@@ -362,6 +367,9 @@ function handleFormSubmit(event) {
         } else {
             customToast("No Record Found", 0);
         }
+//        if(searchSalesRadio.checked){
+//            displaySales(data);
+//        }
         displayItems(data);
     })
     .catch(error => {
@@ -372,19 +380,21 @@ function handleFormSubmit(event) {
 function displayItems(items) {
     const tableBody = document.querySelector(".search-table-body");
     tableBody.innerHTML = ""; // Clear existing rows
-
     var rowId = 1;
     items.forEach(item => {
         var newRow = document.createElement('tr');
         newRow.innerHTML = `<td><i class="edit-pension-icon fa-solid fa-pen-to-square" style="color: #5e62de;"><i class="ms-3 save-icon fa-solid fa-floppy-disk" style="color: #838486;"></i><i class="ms-3 delete-icon fa-solid fa-trash" style="color: #838486;"></i></td>
                           <th scope="row">${rowId++}</th>
-                          <td>${item.inwardId?.inwardMemoNumber || item.outwardId?.outwardBailNumber || item.itemsId?.itemSize}</td>
-                          <td>${item.inwardDate || item.outwardDate || item.itemsId?.itemType}</td>
-                          <td>${item.inwardId?.inwardItemSize || item.outwardId?.outwardItemSize || ""}</td>
-                          <td>${item.inwardId?.inwardItemType || item.outwardId?.outwardItemType || ""}</td>
+                          <td>${item.inwardId?.inwardMemoNumber || item.outwardId?.outwardBailNumber || item.itemsId?.itemSize || item.salesId?.salesItemSize}</td>
+                          <td>${item.inwardDate || item.outwardDate || item.itemsId?.itemType || item.salesId?.salesItemType}</td>
+                          <td>${item.inwardId?.inwardItemSize || item.outwardId?.outwardItemSize || item.salesDozen || ""}</td>
+                          <td>${item.inwardId?.inwardItemType || item.outwardId?.outwardItemType || item.salesPiece ||""}</td>
                           <td>${item.inwardDozen || item.outwardDozen || ""}</td>
                           <td>${item.inwardPiece || item.outwardPiece || ""}</td>`;
-
+        if(item.salesId){
+            tableBody.appendChild(newRow);
+            return;
+        }
         const editPensionIcon = newRow.querySelector('.edit-pension-icon');
 
         // Add click event listener to the edit pension icon
@@ -505,7 +515,7 @@ function displayItems(items) {
                 });
             }
         });
-            tableBody.appendChild(newRow);
+        tableBody.appendChild(newRow);
     });
 }
 function updateItem(deleteUrl,addUrl,jsonObjectOld, jsonObject) {

@@ -4,9 +4,11 @@ import com.salesmanagement.management.entity.inward.Inward;
 import com.salesmanagement.management.entity.items.Items;
 import com.salesmanagement.management.entity.items.ItemsId;
 import com.salesmanagement.management.entity.outward.Outward;
+import com.salesmanagement.management.entity.sales.Sales;
 import com.salesmanagement.management.service.InwardService;
 import com.salesmanagement.management.service.ItemService;
 import com.salesmanagement.management.service.OutwardService;
+import com.salesmanagement.management.service.SalesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,9 @@ public class MainController {
 
     @Autowired
     private OutwardService outwardService;
+
+    @Autowired
+    private SalesService salesService;
 
     @GetMapping("/")
     public String home() {
@@ -143,6 +148,13 @@ public class MainController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<List<Items>> searchAllItem(@RequestBody Items items){
         List<Items> searchQ = itemService.searchItemsByTypeAndSize(items.getItemsId().getItemType(),items.getItemsId().getItemSize());
+        return ResponseEntity.ok(searchQ);
+    }
+
+    @PostMapping("/searchSalesItem")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<List<Sales>> searchSalesItem(@RequestBody Items items){
+        List<Sales> searchQ = salesService.searchSalesByTypeAndSize(items.getItemsId().getItemType(),items.getItemsId().getItemSize());
         return ResponseEntity.ok(searchQ);
     }
 }

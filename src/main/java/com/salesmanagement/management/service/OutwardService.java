@@ -14,13 +14,15 @@ import java.util.List;
 @Service
 public class OutwardService {
     private final OutwardRepository outwardRepository;
-
+    @Autowired
+    private SalesService salesService;
     @Autowired
     public OutwardService(OutwardRepository outwardRepository) {
         this.outwardRepository = outwardRepository;
     }
     public void addOutward(Outward outward){
         outwardRepository.save(outward);
+        salesService.updateSalesOnOutwardAddition(outward);
     }
 
     public List<Outward> searchOutwardByTypeAndSize(String itemType, int itemSize) {
@@ -63,6 +65,7 @@ public class OutwardService {
         Outward getOutward = outwardRepository.findByOutwardId(outward.getOutwardId());
         System.out.println("outward SERVICE: "+outward.getOutwardId());
         if (getOutward != null) {
+            salesService.updateSalesOnOutwardDeletion(getOutward);
             outwardRepository.delete(getOutward);
         }
     }

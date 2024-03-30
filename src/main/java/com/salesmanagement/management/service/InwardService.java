@@ -15,11 +15,15 @@ public class InwardService {
     private final InwardRepository inwardRepository;
 
     @Autowired
+    private SalesService salesService;
+
+    @Autowired
     public InwardService(InwardRepository inwardRepository) {
         this.inwardRepository = inwardRepository;
     }
     public void addInward(Inward inward){
         inwardRepository.save(inward);
+        salesService.updateSalesOnInwardAddition(inward);
     }
 
     public List<Inward> searchInwardByTypeAndSize(String itemType, int itemSize) {
@@ -60,6 +64,7 @@ public class InwardService {
         Inward getInward = inwardRepository.findByInwardId(inward.getInwardId());
         System.out.println("inward SERVICE: "+inward.getInwardId());
         if (getInward != null) {
+            salesService.updateSalesOnInwardDeletion(getInward);
             inwardRepository.delete(getInward);
         }
     }
