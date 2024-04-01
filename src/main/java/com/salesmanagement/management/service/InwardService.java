@@ -34,13 +34,15 @@ public class InwardService {
     }
 
     public boolean isInwardAlreadyContainsItem(Inward inward) {
-        InwardId inwardId = inward.getInwardId();
-        String inwardDate = inward.getInwardDate();
-        float inwardDozen = inward.getInwardDozen();
-        int inwardPiece = inward.getInwardPiece();
-        Inward existingInward = inwardRepository.findByInwardIdAndInwardDateAndInwardDozenAndInwardPiece(
-                inwardId, inwardDate, inwardDozen, inwardPiece);
-        return existingInward != null;
+        Inward getInward = inwardRepository.findByInwardId(inward.getInwardId());
+        return getInward!=null;
+//        InwardId inwardId = inward.getInwardId();
+//        String inwardDate = inward.getInwardDate();
+//        float inwardDozen = inward.getInwardDozen();
+//        int inwardPiece = inward.getInwardPiece();
+//        Inward existingInward = inwardRepository.findByInwardIdAndInwardDateAndInwardDozenAndInwardPiece(
+//                inwardId, inwardDate, inwardDozen, inwardPiece);
+//        return existingInward != null;
     }
 
     @Transactional

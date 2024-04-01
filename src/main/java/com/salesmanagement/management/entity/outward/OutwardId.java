@@ -12,7 +12,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Embeddable
 public class OutwardId implements Serializable {
-    private int outwardBailNumber;
+    private String outwardBailNumber;
     private int outwardItemSize;
     private String outwardItemType;
 }

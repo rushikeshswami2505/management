@@ -367,10 +367,8 @@ function handleFormSubmit(event) {
         } else {
             customToast("No Record Found", 0);
         }
-//        if(searchSalesRadio.checked){
-//            displaySales(data);
-//        }
-        displayItems(data);
+        if(searchSalesRadio.checked) displaySales(data);
+        else displayItems(data);
     })
     .catch(error => {
         console.error('Error:', error);
@@ -396,7 +394,6 @@ function displayItems(items) {
             return;
         }
         const editPensionIcon = newRow.querySelector('.edit-pension-icon');
-
         // Add click event listener to the edit pension icon
         editPensionIcon.addEventListener('click', () => {
             let jsonObjectOld = JSON.parse(JSON.stringify(item));
@@ -518,6 +515,30 @@ function displayItems(items) {
         tableBody.appendChild(newRow);
     });
 }
+
+function displaySales(items) {
+    const tableBody = document.querySelector(".search-table-body");
+    tableBody.innerHTML = ""; // Clear existing rows
+    var rowId = 1;
+    items.forEach(item => {
+        const isNegative = item.salesDozen < 0 || item.salesPiece < 0;
+        var newRow = document.createElement('tr');
+        newRow.innerHTML = `<td><i class="edit-pension-icon fa-solid fa-pen-to-square" style="color: #5e62de;"><i class="ms-3 save-icon fa-solid fa-floppy-disk" style="color: #838486;"></i><i class="ms-3 delete-icon fa-solid fa-trash" style="color: #838486;"></i></td>
+                          <th scope="row">${rowId++}</th>
+                          <td>${item.salesId?.salesItemSize}</td>
+                          <td>${item.salesId?.salesItemType}</td>
+                          <td>${item.salesDozen}</td>
+                          <td>${item.salesPiece}</td>
+                          <td></td>
+                          <td></td>`;
+        if (isNegative) {
+            newRow.classList.add('negative-row');
+        }
+        tableBody.appendChild(newRow);
+    })
+}
+
+
 function updateItem(deleteUrl,addUrl,jsonObjectOld, jsonObject) {
     console.log('update old ',jsonObjectOld);
     console.log('update new',jsonObject);

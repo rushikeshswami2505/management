@@ -33,13 +33,15 @@ public class OutwardService {
     }
 
     public boolean isOutwardAlreadyContainsItem(Outward outward) {
-        OutwardId outwardId = outward.getOutwardId();
-        String outwardDate = outward.getOutwardDate();
-        float outwardDozen = outward.getOutwardDozen();
-        int outwardPiece = outward.getOutwardPiece();
-        Outward existingOutward = outwardRepository.findByOutwardIdAndOutwardDateAndOutwardDozenAndOutwardPiece(
-                outwardId, outwardDate, outwardDozen, outwardPiece);
-        return existingOutward != null;
+        Outward getOutward = outwardRepository.findByOutwardId(outward.getOutwardId());
+        return getOutward!=null;
+//        OutwardId outwardId = outward.getOutwardId();
+//        String outwardDate = outward.getOutwardDate();
+//        float outwardDozen = outward.getOutwardDozen();
+//        int outwardPiece = outward.getOutwardPiece();
+//        Outward existingOutward = outwardRepository.findByOutwardIdAndOutwardDateAndOutwardDozenAndOutwardPiece(
+//                outwardId, outwardDate, outwardDozen, outwardPiece);
+//        return existingOutward != null;
     }
 
     @Transactional

@@ -31,3 +31,6 @@
      border-radius : 180px 180px 180px 180px;
      padding-left : 10px;
 }
+.negative-row {
+    background-color: #ffcccc; /* Light red */
+}

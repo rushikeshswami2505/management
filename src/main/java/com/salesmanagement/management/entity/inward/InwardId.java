@@ -16,7 +16,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Embeddable
 public class InwardId implements Serializable {
-    private int inwardMemoNumber;
+    private String inwardMemoNumber;
     private int inwardItemSize;
     private String inwardItemType;
 }
