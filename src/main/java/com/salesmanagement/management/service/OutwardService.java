@@ -2,6 +2,8 @@ package com.salesmanagement.management.service;
 
 import com.salesmanagement.management.entity.inward.Inward;
 import com.salesmanagement.management.entity.inward.InwardId;
+import com.salesmanagement.management.entity.items.Items;
+import com.salesmanagement.management.entity.items.ItemsId;
 import com.salesmanagement.management.entity.outward.Outward;
 import com.salesmanagement.management.entity.outward.OutwardId;
 import com.salesmanagement.management.repository.OutwardRepository;
@@ -35,30 +37,12 @@ public class OutwardService {
     public boolean isOutwardAlreadyContainsItem(Outward outward) {
         Outward getOutward = outwardRepository.findByOutwardId(outward.getOutwardId());
         return getOutward!=null;
-//        OutwardId outwardId = outward.getOutwardId();
-//        String outwardDate = outward.getOutwardDate();
-//        float outwardDozen = outward.getOutwardDozen();
-//        int outwardPiece = outward.getOutwardPiece();
-//        Outward existingOutward = outwardRepository.findByOutwardIdAndOutwardDateAndOutwardDozenAndOutwardPiece(
-//                outwardId, outwardDate, outwardDozen, outwardPiece);
-//        return existingOutward != null;
     }
 
     @Transactional
-    public void updateOutward(Outward outward) {
-        // Retrieve the existing inward entity from the database
-        Outward existingOutward = outwardRepository.findByOutwardId(outward.getOutwardId());
-
-        // Check if the existing inward entity exists
-        if (existingOutward != null) {
-            // Update the properties of the existing inward entity with the values from the provided inward entity
-            existingOutward.setOutwardDate(outward.getOutwardDate());
-            existingOutward.setOutwardDozen(outward.getOutwardDozen());
-            existingOutward.setOutwardPiece(outward.getOutwardPiece());
-
-            // Save the updated inward entity to the database
-            outwardRepository.save(existingOutward);
-        }
+    public void updateOutward(ItemsId itemOldId,ItemsId itemNewId) {
+        outwardRepository.updateOutward(itemOldId.getItemSize(),itemOldId.getItemType(),
+                                        itemNewId.getItemSize(),itemNewId.getItemType());
     }
 
 

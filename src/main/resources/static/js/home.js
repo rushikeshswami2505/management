@@ -32,8 +32,9 @@ searchBtn.addEventListener('click',function(){
 });
 
 //////////////////////GET ITEM LIST ON LOAD PAGE////////////////////
-let fullItemList;
-
+let fullItemList = [];
+let fullItemSize = [];
+let fullItemType = [];
 // Call the function to fetch items list
 getItemsList();
 
@@ -47,6 +48,22 @@ function getItemsList() {
         })
         .then(data => {
             fullItemList = data;
+            fullItemSize = [];
+            fullItemType = [];
+            for(let i=0;i<fullItemList.length;i++){
+                fullItemSize.push(fullItemList[i].itemsId.itemSize+"");
+                fullItemType.push(fullItemList[i].itemsId.itemType);
+            }
+            fullItemSize.sort();
+            fullItemType.sort();
+            autocomplete(document.getElementById('searchItemSize'),fullItemSize);
+            autocomplete(document.getElementById('searchItemType'),fullItemType);
+
+            autocomplete(document.getElementById('inwardItemSize'),fullItemSize);
+            autocomplete(document.getElementById('inwardItemType'),fullItemType);
+
+            autocomplete(document.getElementById('outwardItemSize'),fullItemSize);
+            autocomplete(document.getElementById('outwardItemType'),fullItemType);
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
@@ -328,7 +345,7 @@ function handleRadioChange(event) {
         newHeaderNames = ['Edit', '#', 'Item Size', 'Item Type','','','',''];
     }
     else{
-        newHeaderNames = ['Edit', '#', 'Item Size', 'Item Type','Dozen','Piece','',''];
+        newHeaderNames = ['#', 'Item Size', 'Item Type','Piece','','','',''];
     }
     thElements.forEach((th, index) => {
             th.innerHTML = newHeaderNames[index];
@@ -523,12 +540,13 @@ function displaySales(items) {
     items.forEach(item => {
         const isNegative = item.salesDozen < 0 || item.salesPiece < 0;
         var newRow = document.createElement('tr');
-        newRow.innerHTML = `<td><i class="edit-pension-icon fa-solid fa-pen-to-square" style="color: #5e62de;"><i class="ms-3 save-icon fa-solid fa-floppy-disk" style="color: #838486;"></i><i class="ms-3 delete-icon fa-solid fa-trash" style="color: #838486;"></i></td>
-                          <th scope="row">${rowId++}</th>
+        newRow.innerHTML = `<th scope="row">${rowId++}</th>
                           <td>${item.salesId?.salesItemSize}</td>
                           <td>${item.salesId?.salesItemType}</td>
-                          <td>${item.salesDozen}</td>
                           <td>${item.salesPiece}</td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
                           <td></td>
                           <td></td>`;
         if (isNegative) {
@@ -539,9 +557,9 @@ function displaySales(items) {
 }
 
 
-function updateItem(deleteUrl,addUrl,jsonObjectOld, jsonObject) {
+function updateItem(deleteUrl,addUrl,jsonObjectOld, jsonObjectNew) {
     console.log('update old ',jsonObjectOld);
-    console.log('update new',jsonObject);
+    console.log('update new',jsonObjectNew);
     fetch(deleteUrl,{
         method: 'POST',
         headers: {
@@ -558,7 +576,7 @@ function updateItem(deleteUrl,addUrl,jsonObjectOld, jsonObject) {
     .then(data =>{
         console.log("Delete called ", data);
         if(data == 1 ) {
-            addItem(addUrl,jsonObject);
+            addItem(addUrl,jsonObjectOld,jsonObjectNew);
         }
     })
     .catch(error => {
@@ -566,13 +584,13 @@ function updateItem(deleteUrl,addUrl,jsonObjectOld, jsonObject) {
     });
 }
 
-function addItem(addUrl,jsonObject) {
+function addItem(addUrl,jsonObjectOld,jsonObjectNew) {
     fetch(addUrl, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(jsonObject)
+        body: JSON.stringify(jsonObjectNew)
     })
     .then(response => {
         if (!response.ok) {
@@ -584,6 +602,10 @@ function addItem(addUrl,jsonObject) {
     .then(data =>{
         if(data == 1) {
             customToast("Updated item", 1);
+            if(addUrl==='/addItem'){
+                getItemsList();
+                changeInwardOutwardSales('/updateInward',jsonObjectOld, jsonObjectNew);
+            }
         }
         else{
             customToast("Updated item", 1);
@@ -617,6 +639,32 @@ function deleteItem(deleteUrl,jsonObject) {
         console.error('Error:', error);
     });
 }
+function changeInwardOutwardSales(url,jsonObjectOld,jsonObjectNew){
+    console.log("change called");
+    l = {'itemsOld' : jsonObjectOld,'itemsNew' : jsonObjectNew};
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(l)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data =>{
+        if(data == 1) changeInwardOutwardSales('/updateInward',jsonObjectOld,jsonObjectNew)
+        else if (data == 2) changeInwardOutwardSales('/updateSales',jsonObjectOld,jsonObjectNew);
+        else console.log('data updated');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
 //////////////////////////////SEARCH END///////////////////////////////////////////////
 
 ////////////CUSTOM TOAST///////////////////
@@ -632,4 +680,102 @@ function customToast(msg,status){
         toastText.classList.remove("text-bg-success");
     }
     toastBootstrap.show();
+}
+/////////////////AUTOCOMPLETE///////////////////////
+
+function autocomplete(inp, arr) {
+  /*the autocomplete function takes two arguments,
+  the text field element and an array of possible autocompleted values:*/
+  var currentFocus;
+  /*execute a function when someone writes in the text field:*/
+  inp.addEventListener("input", function(e) {
+      var a, b, i, val = this.value;
+      /*close any already open lists of autocompleted values*/
+      closeAllLists();
+      if (!val) { return false;}
+      currentFocus = -1;
+      /*create a DIV element that will contain the items (values):*/
+      a = document.createElement("DIV");
+      a.setAttribute("id", this.id + "autocomplete-list");
+      a.setAttribute("class", "autocomplete-items");
+      /*append the DIV element as a child of the autocomplete container:*/
+      this.parentNode.appendChild(a);
+      /*for each item in the array...*/
+      for (i = 0; i < arr.length; i++) {
+        /*check if the item starts with the same letters as the text field value:*/
+        if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+          /*create a DIV element for each matching element:*/
+          b = document.createElement("DIV");
+          /*make the matching letters bold:*/
+          b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+          b.innerHTML += arr[i].substr(val.length);
+          /*insert a input field that will hold the current array item's value:*/
+          b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+          /*execute a function when someone clicks on the item value (DIV element):*/
+          b.addEventListener("click", function(e) {
+              /*insert the value for the autocomplete text field:*/
+              inp.value = this.getElementsByTagName("input")[0].value;
+              /*close the list of autocompleted values,
+              (or any other open lists of autocompleted values:*/
+              closeAllLists();
+          });
+          a.appendChild(b);
+        }
+      }
+  });
+  /*execute a function presses a key on the keyboard:*/
+  inp.addEventListener("keydown", function(e) {
+      var x = document.getElementById(this.id + "autocomplete-list");
+      if (x) x = x.getElementsByTagName("div");
+      if (e.keyCode == 40) {
+        /*If the arrow DOWN key is pressed,
+        increase the currentFocus variable:*/
+        currentFocus++;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 38) { //up
+        /*If the arrow UP key is pressed,
+        decrease the currentFocus variable:*/
+        currentFocus--;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 13) {
+        /*If the ENTER key is pressed, prevent the form from being submitted,*/
+        e.preventDefault();
+        if (currentFocus > -1) {
+          /*and simulate a click on the "active" item:*/
+          if (x) x[currentFocus].click();
+        }
+      }
+  });
+  function addActive(x) {
+    /*a function to classify an item as "active":*/
+    if (!x) return false;
+    /*start by removing the "active" class on all items:*/
+    removeActive(x);
+    if (currentFocus >= x.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = (x.length - 1);
+    /*add class "autocomplete-active":*/
+    x[currentFocus].classList.add("autocomplete-active");
+  }
+  function removeActive(x) {
+    /*a function to remove the "active" class from all autocomplete items:*/
+    for (var i = 0; i < x.length; i++) {
+      x[i].classList.remove("autocomplete-active");
+    }
+  }
+  function closeAllLists(elmnt) {
+    /*close all autocomplete lists in the document,
+    except the one passed as an argument:*/
+    var x = document.getElementsByClassName("autocomplete-items");
+    for (var i = 0; i < x.length; i++) {
+      if (elmnt != x[i] && elmnt != inp) {
+        x[i].parentNode.removeChild(x[i]);
+      }
+    }
+  }
+  /*execute a function when someone clicks in the document:*/
+  document.addEventListener("click", function (e) {
+      closeAllLists(e.target);
+  });
 }

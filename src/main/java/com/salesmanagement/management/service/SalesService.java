@@ -1,6 +1,7 @@
 package com.salesmanagement.management.service;
 
 import com.salesmanagement.management.entity.inward.Inward;
+import com.salesmanagement.management.entity.items.ItemsId;
 import com.salesmanagement.management.entity.outward.Outward;
 import com.salesmanagement.management.entity.sales.Sales;
 import com.salesmanagement.management.entity.sales.SalesId;
@@ -62,35 +63,12 @@ public class SalesService {
         else if (itemSize == 0) return salesRepository.getSalesByItemType(itemType);
         else return salesRepository.getSalesByItemTypeAndItemSize(itemType, itemSize);
     }
-}
 
-//public void calculateAndSaveAvailableItems() {
-//    List<Inward> inwardList = inwardRepository.findAll();
-//    List<Outward> outwardList = outwardRepository.findAll();
-//
-//    Map<SalesId, Sales> availableItemsMap = new HashMap<>();
-//
-//    // Subtract outward from inward
-//    for (Inward inward : inwardList) {
-//        SalesId salesId = new SalesId(inward.getInwardId().getInwardItemSize(), inward.getInwardId().getInwardItemType());
-//        Sales availableItem = availableItemsMap.getOrDefault(salesId, new Sales());
-//        availableItem.setSalesId(salesId);
-//        availableItem.setSalesDozen(availableItem.getSalesDozen() + inward.getInwardDozen());
-//        availableItem.setSalesPiece(availableItem.getSalesPiece() + inward.getInwardPiece());
-//        availableItemsMap.put(salesId, availableItem);
-//    }
-//
-//    for (Outward outward : outwardList) {
-//        SalesId salesId = new SalesId(outward.getOutwardId().getOutwardItemSize(), outward.getOutwardId().getOutwardItemType());
-//        Sales availableItem = availableItemsMap.getOrDefault(salesId, new Sales());
-//        availableItem.setSalesId(salesId);
-//        availableItem.setSalesDozen(availableItem.getSalesDozen() - outward.getOutwardDozen());
-//        availableItem.setSalesPiece(availableItem.getSalesPiece() - outward.getOutwardPiece());
-//        availableItemsMap.put(salesId, availableItem);
-//    }
-//
-//    // Save available items to database
-//    for (Sales availableItem : availableItemsMap.values()) {
-//        salesRepository.save(availableItem);
-//    }
-//}
+    @Transactional
+    public void updateSales(ItemsId itemOldId, ItemsId itemNewId) {
+        System.out.println("update service called: before");
+        salesRepository.updateSales(itemOldId.getItemSize(),itemOldId.getItemType(),
+                itemNewId.getItemSize(),itemNewId.getItemType());
+        System.out.println("update service called: after");
+    }
+}

@@ -2,6 +2,7 @@ package com.salesmanagement.management.repository;
 import com.salesmanagement.management.entity.outward.Outward;
 import com.salesmanagement.management.entity.outward.OutwardId;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -19,4 +20,9 @@ public interface OutwardRepository extends JpaRepository<Outward, OutwardId> {
     Outward findByOutwardIdAndOutwardDateAndOutwardDozenAndOutwardPiece(OutwardId outwardId, String outwardDate, float outwardDozen, int outwardPiece);
 
     Outward findByOutwardId(OutwardId outwardId);
+
+    @Modifying
+    @Query("UPDATE Outward o SET o.outwardId.outwardItemSize = :newItemSize, o.outwardId.outwardItemType = :newItemType " +
+            "WHERE o.outwardId.outwardItemSize = :oldItemSize AND o.outwardId.outwardItemType = :oldItemType")
+    void updateOutward(int oldItemSize, String oldItemType, int newItemSize, String newItemType);
 }

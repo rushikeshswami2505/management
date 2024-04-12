@@ -1,5 +1,6 @@
 package com.salesmanagement.management.controller;
 
+import com.salesmanagement.management.entity.UpdateEntity;
 import com.salesmanagement.management.entity.inward.Inward;
 import com.salesmanagement.management.entity.items.Items;
 import com.salesmanagement.management.entity.items.ItemsId;
@@ -83,11 +84,8 @@ public class MainController {
     }
     @PostMapping("/updateInward")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<Integer> updateInward(@RequestBody Inward inward) {
-        if (inward.getInwardId() == null) {
-            return ResponseEntity.ok(0);
-        }
-        inwardService.updateInward(inward);
+    public ResponseEntity<Integer> updateInward(@RequestBody UpdateEntity updateEntity) {
+        inwardService.updateInward(updateEntity.getItemsOld().getItemsId(),updateEntity.getItemsNew().getItemsId());
         return ResponseEntity.ok(1);
     }
 
@@ -119,6 +117,12 @@ public class MainController {
         return ResponseEntity.ok(1);
     }
 
+    @PostMapping("/updateOutward")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<Integer> updateOutward(@RequestBody UpdateEntity updateEntity) {
+        outwardService.updateOutward(updateEntity.getItemsOld().getItemsId(),updateEntity.getItemsNew().getItemsId());
+        return ResponseEntity.ok(2);
+    }
     @PostMapping("/deleteOutward")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Integer> deleteOutward(@RequestBody Outward outward) {
@@ -149,6 +153,14 @@ public class MainController {
     public ResponseEntity<List<Items>> searchAllItem(@RequestBody Items items){
         List<Items> searchQ = itemService.searchItemsByTypeAndSize(items.getItemsId().getItemType(),items.getItemsId().getItemSize());
         return ResponseEntity.ok(searchQ);
+    }
+
+    @PostMapping("/updateSales")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<Integer> updateSales(@RequestBody UpdateEntity updateEntity) {
+        salesService.updateSales(updateEntity.getItemsOld().getItemsId(),updateEntity.getItemsNew().getItemsId());
+
+        return ResponseEntity.ok(3);
     }
 
     @PostMapping("/searchSalesItem")
