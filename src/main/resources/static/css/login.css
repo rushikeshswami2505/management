@@ -1,0 +1,94 @@
+/* Define root variables for color schemes */
+/* Define global styles for the body */
+/* Define styles for horizontal rule elements */
+/* Define styles for error message alerts */
+/* Define styles for links related to password recovery and sign up */
+/* Define styles for cards */
+/* Define styles for toast notifications */
+/* Define styles for buttons and button containers */
+/* Define styles for forgot password modal */
+/* Define styles for alert messages */
+:root {
+    --btn-bg-light-color: #f8f8f8;
+    --btn-active-light-bg-color: #f2f2f2;
+    --btn-bg-color: #F2F2F2;
+    --btn-active-bg-color: #bacada;
+    --btn-bg-hover-color: #322be6;
+    --primary-color: #645fe3;
+    --primary-color-hover: #322be6;
+    --primary-color-extra-hover: #0600be;
+    --error-color: #872e36;
+    --container-color: #f1f8ff;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    background-color: #ffffff;
+    background-repeat: no-repeat;
+    background-image: url("../images/white_bg.jpg");
+    background-size: cover;
+}
+hr{
+    color: #ffffff;
+    height: 1px;
+    background-color: white;
+    padding: 0px;
+    margin: 0px;
+    border: white;
+    text-decoration: none;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+#emailAlert, #passwordAlert{
+    color: red;
+    display: none;
+    margin-top: 2px;
+}
+#forgotpassword {
+  color: var(--primary-color);
+  cursor: pointer;
+}
+
+#forgotpassword:hover, #signup:hover {
+  color: var(--primary-color-hover);
+}
+
+.card{
+    background-color: var(--container-color) !important;
+}
+
+.btn-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.btn {
+    border-radius: 0.3rem;
+    background-color: var(--primary-color) !important;
+    color: #ffffff;
+    border: none;
+    height: 2.3rem;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    cursor: pointer !important;
+    align-items: center;
+    font-size: 1.1rem;
+}
+.btn:disabled{
+    cursor: not-allowed !important;
+    background-color: var(--primary-color) !important;
+    color: white;
+}
+.btn:hover{
+    background-color: var(--primary-color-hover) !important;
+    outline: none;
+}

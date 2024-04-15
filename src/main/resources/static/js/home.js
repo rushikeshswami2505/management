@@ -3,6 +3,11 @@ let outwardBtn = document.getElementById("outwardBtn");
 let searchBtn = document.getElementById("searchBtn");
 let toast = document.getElementById("toast");
 
+function logout() {
+    localStorage.setItem("isLoggedIn", "false");
+    window.location.href = "/";
+    history.pushState(null, null, '/');
+}
 
 inwardBtn.addEventListener('click', function() {
     document.getElementById('outward').classList.remove('active');
@@ -656,7 +661,8 @@ function changeInwardOutwardSales(url,jsonObjectOld,jsonObjectNew){
         return response.json();
     })
     .then(data =>{
-        if(data == 1) changeInwardOutwardSales('/updateInward',jsonObjectOld,jsonObjectNew)
+        console.log("script data : ",data);
+        if(data == 1) changeInwardOutwardSales('/updateOutward',jsonObjectOld,jsonObjectNew)
         else if (data == 2) changeInwardOutwardSales('/updateSales',jsonObjectOld,jsonObjectNew);
         else console.log('data updated');
     })

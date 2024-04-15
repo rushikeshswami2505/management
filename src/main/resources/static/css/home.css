@@ -1,7 +1,12 @@
+body {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    background-repeat: no-repeat;
+    background-image: url("../images/white_texture.jpg");
+    background-size: cover;
+}
 .view-body {
     display: none;
 }
-
 .active{
     display: block;
 }

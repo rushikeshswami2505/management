@@ -34,7 +34,11 @@ public class MainController {
 
     @GetMapping("/")
     public String home() {
-        return "home";
+        return "login";
+    }
+    @GetMapping("/home.html")
+    public String homePage() {
+        return "home"; // Assuming "home.html" is located in "resources/templates/home.html"
     }
 
     @PostMapping("/addItem")
@@ -159,7 +163,7 @@ public class MainController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Integer> updateSales(@RequestBody UpdateEntity updateEntity) {
         salesService.updateSales(updateEntity.getItemsOld().getItemsId(),updateEntity.getItemsNew().getItemsId());
-
+        System.out.println("update controller");
         return ResponseEntity.ok(3);
     }
 
