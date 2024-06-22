@@ -1,9 +1,9 @@
 package com.salesmanagement.management.controller;
 
+import com.salesmanagement.management.download.ExcelGenerator;
 import com.salesmanagement.management.entity.UpdateEntity;
 import com.salesmanagement.management.entity.inward.Inward;
 import com.salesmanagement.management.entity.items.Items;
-import com.salesmanagement.management.entity.items.ItemsId;
 import com.salesmanagement.management.entity.items.SearchItems;
 import com.salesmanagement.management.entity.outward.Outward;
 import com.salesmanagement.management.entity.sales.Sales;
@@ -12,11 +12,16 @@ import com.salesmanagement.management.service.ItemService;
 import com.salesmanagement.management.service.OutwardService;
 import com.salesmanagement.management.service.SalesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -173,5 +178,50 @@ public class MainController {
     public ResponseEntity<List<Sales>> searchSalesItem(@RequestBody SearchItems searchItems){
         List<Sales> searchQ = salesService.searchSalesByTypeAndSize(searchItems.getItemType(), searchItems.getItemSize());
         return ResponseEntity.ok(searchQ);
+    }
+
+    @PostMapping("/downloadOutwardExcel")
+    public ResponseEntity<ByteArrayResource> downloadOutwardExcel(@RequestBody SearchItems searchItems) throws IOException {
+        List<Outward> outwardList = outwardService.searchOutwardByTypeAndSizeAndBailNumber(searchItems.getItemType(), searchItems.getItemSize(), searchItems.getBailNumber());
+
+        ByteArrayOutputStream out = ExcelGenerator.generateOutwardExcel(outwardList);
+
+        ByteArrayResource resource = new ByteArrayResource(out.toByteArray());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=outward.xlsx")
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .contentLength(resource.contentLength())
+                .body(resource);
+    }
+
+    @PostMapping("/downloadInwardExcel")
+    public ResponseEntity<ByteArrayResource> downloadInwardExcel(@RequestBody SearchItems searchItems) throws IOException {
+        List<Inward> inwardList = inwardService.searchInwardByTypeAndSizeAndMemoNumber(searchItems.getItemType(), searchItems.getItemSize(), searchItems.getMemoNumber());
+
+        ByteArrayOutputStream out = ExcelGenerator.generateInwardExcel(inwardList);
+
+        ByteArrayResource resource = new ByteArrayResource(out.toByteArray());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=inward.xlsx")
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .contentLength(resource.contentLength())
+                .body(resource);
+    }
+
+    @PostMapping("/downloadStockExcel")
+    public ResponseEntity<ByteArrayResource> downloadStockExcel(@RequestBody SearchItems searchItems) throws IOException {
+        List<Sales> salesList = salesService.searchSalesByTypeAndSize(searchItems.getItemType(), searchItems.getItemSize());
+
+        ByteArrayOutputStream out = ExcelGenerator.generateStockExcel(salesList);
+
+        ByteArrayResource resource = new ByteArrayResource(out.toByteArray());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=stock.xlsx")
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .contentLength(resource.contentLength())
+                .body(resource);
     }
 }
