@@ -53,27 +53,31 @@ function getItemsList() {
         })
         .then(data => {
             fullItemList = data;
-            fullItemSize = [];
-            fullItemType = [];
-            for(let i=0;i<fullItemList.length;i++){
-                fullItemSize.push(fullItemList[i].itemsId.itemSize+"");
-                fullItemType.push(fullItemList[i].itemsId.itemType);
+            let itemSizeSet = new Set();
+            let itemTypeSet = new Set();
+
+            for (let i = 0; i < fullItemList.length; i++) {
+                itemSizeSet.add(fullItemList[i].itemsId.itemSize + "");
+                itemTypeSet.add(fullItemList[i].itemsId.itemType);
             }
-            fullItemSize.sort();
-            fullItemType.sort();
-            autocomplete(document.getElementById('searchItemSize'),fullItemSize);
-            autocomplete(document.getElementById('searchItemType'),fullItemType);
 
-            autocomplete(document.getElementById('inwardItemSize'),fullItemSize);
-            autocomplete(document.getElementById('inwardItemType'),fullItemType);
+            let fullItemSize = Array.from(itemSizeSet).sort();
+            let fullItemType = Array.from(itemTypeSet).sort();
 
-            autocomplete(document.getElementById('outwardItemSize'),fullItemSize);
-            autocomplete(document.getElementById('outwardItemType'),fullItemType);
+            autocomplete(document.getElementById('searchItemSize'), fullItemSize);
+            autocomplete(document.getElementById('searchItemType'), fullItemType);
+
+            autocomplete(document.getElementById('inwardItemSize'), fullItemSize);
+            autocomplete(document.getElementById('inwardItemType'), fullItemType);
+
+            autocomplete(document.getElementById('outwardItemSize'), fullItemSize);
+            autocomplete(document.getElementById('outwardItemType'), fullItemType);
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
         });
 }
+
 ///////////////////////////Modal//////////////////
 document.getElementById("itemForm").addEventListener('submit', function(event) {
     event.preventDefault();
@@ -136,16 +140,21 @@ document.getElementById('inwardForm').addEventListener('submit', function(event)
 
     // Get form data
     var formData = new FormData(document.getElementById('inwardForm'));
-    var inwardMemoNumber = document.getElementById('inwardMemoNumber').value;
-    var inwardDate = document.getElementById('inwardDate').value ;
-    var inwardItemSize = formData.get('inwardItemSize');
-    var inwardItemType = formData.get('inwardItemType');
-    var inwardDozen = formData.get('inwardDozen');
-    var inwardPiece = formData.get('inwardPiece');
-    if(!inwardMemoNumber || !inwardDate || !inwardItemSize || !inwardItemType || !inwardDozen || !inwardPiece){
-        customToast("Please enter valid data",0);
+
+    var inwardMemoNumber = document.getElementById('inwardMemoNumber').value.trim();
+    var inwardDate = document.getElementById('inwardDate').value.trim();
+    var inwardItemSize = formData.get('inwardItemSize').trim();
+    var inwardItemType = formData.get('inwardItemType').trim();
+    var inwardDozen = formData.get('inwardDozen').trim();
+    var inwardPiece = formData.get('inwardPiece').trim();
+
+    if (!inwardMemoNumber || !inwardDate || !inwardItemSize || !inwardItemType || !inwardDozen || !inwardPiece) {
+        customToast("Please enter valid data", 0);
         return;
     }
+
+    // Proceed with further processing
+
 
     let checkInwardContain = false;
     if (fullItemList) { // Ensure fullItemList is not null or undefined
@@ -161,19 +170,21 @@ document.getElementById('inwardForm').addEventListener('submit', function(event)
         return;
     }
 
-    var jsonObject = {};
     var inwardId = {};
 
-    // Populate inwardId object with values
-    inwardId["inwardMemoNumber"] = document.getElementById("inwardMemoNumber").value;
-    inwardId["inwardItemSize"] = document.getElementById("inwardItemSize").value;
-    inwardId["inwardItemType"] = document.getElementById("inwardItemType").value;
+    inwardId["inwardMemoNumber"] = document.getElementById("inwardMemoNumber").value.trim();
+    inwardId["inwardItemSize"] = document.getElementById("inwardItemSize").value.trim();
+    inwardId["inwardItemType"] = document.getElementById("inwardItemType").value.trim();
 
-    // Populate jsonObject with other values
-    jsonObject["inwardDate"] = document.getElementById("inwardDate").value;
-    jsonObject["inwardDozen"] = document.getElementById("inwardDozen").value;
-    jsonObject["inwardPiece"] = document.getElementById("inwardPiece").value;
+    var jsonObject = {};
+
+    jsonObject["inwardDate"] = document.getElementById("inwardDate").value.trim();
+    jsonObject["inwardDozen"] = document.getElementById("inwardDozen").value.trim();
+    jsonObject["inwardPiece"] = document.getElementById("inwardPiece").value.trim();
     jsonObject["inwardId"] = inwardId;
+
+    // Proceed with further processing
+
     fetch('/addInward', {
         method: 'POST',
         headers: {
@@ -238,17 +249,20 @@ document.getElementById('outwardForm').addEventListener('submit', function(event
 
     // Get form data
     var formData = new FormData(document.getElementById('outwardForm'));
-    var outwardBailNumber = document.getElementById('outwardBailNumber').value;
-    var outwardDate = document.getElementById('outwardDate').value ;
-    var outwardItemSize = formData.get('outwardItemSize');
-    var outwardItemType = formData.get('outwardItemType');
-    var outwardDozen = formData.get('outwardDozen');
-    var outwardPiece = formData.get('outwardPiece');
 
-    if(!outwardBailNumber || !outwardDate || !outwardItemSize || !outwardItemType || !outwardDozen || !outwardPiece){
-        customToast("Please enter valid data",0);
+    var outwardBailNumber = document.getElementById('outwardBailNumber').value.trim();
+    var outwardDate = document.getElementById('outwardDate').value.trim();
+    var outwardItemSize = formData.get('outwardItemSize').trim();
+    var outwardItemType = formData.get('outwardItemType').trim();
+    var outwardDozen = formData.get('outwardDozen').trim();
+    var outwardPiece = formData.get('outwardPiece').trim();
+
+    if (!outwardBailNumber || !outwardDate || !outwardItemSize || !outwardItemType || !outwardDozen || !outwardPiece) {
+        customToast("Please enter valid data", 0);
         return;
     }
+
+    // Proceed with further processing
 
     let checkOutwardContain = false;
     if (fullItemList) { // Ensure fullItemList is not null or undefined
@@ -265,19 +279,20 @@ document.getElementById('outwardForm').addEventListener('submit', function(event
     }
 
     // Convert form data to JSON
+    var outwardId = {};
+
+    outwardId["outwardBailNumber"] = document.getElementById("outwardBailNumber").value.trim();
+    outwardId["outwardItemSize"] = document.getElementById("outwardItemSize").value.trim();
+    outwardId["outwardItemType"] = document.getElementById("outwardItemType").value.trim();
+
     var jsonObject = {};
-    var outwardId= {};
 
-    // Populate inwardId object with values
-    outwardId["outwardBailNumber"] = document.getElementById("outwardBailNumber").value;
-    outwardId["outwardItemSize"] = document.getElementById("outwardItemSize").value;
-    outwardId["outwardItemType"] = document.getElementById("outwardItemType").value;
-
-    // Populate jsonObject with other values
-    jsonObject["outwardDate"] = document.getElementById("outwardDate").value;
-    jsonObject["outwardDozen"] = document.getElementById("outwardDozen").value;
-    jsonObject["outwardPiece"] = document.getElementById("outwardPiece").value;
+    jsonObject["outwardDate"] = document.getElementById("outwardDate").value.trim();
+    jsonObject["outwardDozen"] = document.getElementById("outwardDozen").value.trim();
+    jsonObject["outwardPiece"] = document.getElementById("outwardPiece").value.trim();
     jsonObject["outwardId"] = outwardId;
+
+    // Proceed with further processing
 
     console.log(jsonObject);
 
@@ -362,20 +377,25 @@ function handleFormSubmit(event) {
     event.preventDefault();
     let searchItemSize = document.getElementById("searchItemSize");
     let searchItemType = document.getElementById("searchItemType");
-    let searchType = inwardRadio.checked ? "searchInwardItem" : outwardRadio.checked? "searchOutwardItem" : searchAllItemsRadio.checked? "searchAllItem" : "searchSalesItem";;
+    let searchMemoNumber = document.getElementById("searchMemoNumber");
+    let searchBailNumber = document.getElementById("searchBailNumber");
+
+    let searchType = inwardRadio.checked ? "searchInwardItem" : outwardRadio.checked? "searchOutwardItem" : searchAllItemsRadio.checked? "searchAllItem" : "searchSalesItem";
 
     var itemsIdObject = {
         "itemSize": searchItemSize.value,
-        "itemType": searchItemType.value
+        "itemType": searchItemType.value,
+        "memoNumber": searchMemoNumber.value,
+        "bailNumber": searchBailNumber.value
     };
-    jsonObject = {};
-    jsonObject["itemsId"] = itemsIdObject;
+    /*jsonObject = {};
+    jsonObject["itemsId"] = itemsIdObject;*/
     fetch(`/${searchType}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(jsonObject)
+        body: JSON.stringify(itemsIdObject)
     })
     .then(response => {
         if (!response.ok) {

@@ -28,11 +28,15 @@ public class InwardService {
         salesService.updateSalesOnInwardAddition(inward);
     }
 
-    public List<Inward> searchInwardByTypeAndSize(String itemType, int itemSize) {
-        if ((itemType == null || StringUtils.isEmpty(itemType)) && itemSize == 0) return inwardRepository.findAll();
-        else if (itemType == null || StringUtils.isEmpty(itemType)) return inwardRepository.getInwardByItemSize(itemSize);
-        else if (itemSize == 0) return inwardRepository.getInwardByItemType(itemType);
-        else return inwardRepository.getInwardByItemTypeAndItemSize(itemType, itemSize);
+    public List<Inward> searchInwardByTypeAndSizeAndMemoNumber(String itemType, int itemSize, String memoNumber) {
+        if ((StringUtils.isEmpty(itemType)) && itemSize == 0 && StringUtils.isEmpty(memoNumber)) return inwardRepository.findAll();
+        else if (itemSize==0 && StringUtils.isEmpty(itemType)) return inwardRepository.getInwardByMemoNumber(memoNumber);
+        else if (StringUtils.isEmpty(itemType) && StringUtils.isEmpty(memoNumber)) return inwardRepository.getInwardByItemSize(itemSize);
+        else if (itemSize==0 && StringUtils.isEmpty(memoNumber)) return inwardRepository.getInwardByItemType(itemType);
+        else if (itemSize==0) return inwardRepository.getInwardByItemTypeAndMemoNumber(itemType,memoNumber);
+        else if (StringUtils.isEmpty(itemType)) return inwardRepository.getInwardByItemSizeAndMemoNumber(itemSize,memoNumber);
+        else if (StringUtils.isEmpty(memoNumber)) return inwardRepository.getInwardByItemTypeAndItemSize(itemType, itemSize);
+        else return inwardRepository.getInwardByItemTypeAndItemSizeAndMemoNumber(itemType, itemSize,memoNumber);
     }
 
     public boolean isInwardAlreadyContainsItem(Inward inward) {

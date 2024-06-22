@@ -7,6 +7,7 @@ import com.salesmanagement.management.entity.items.ItemsId;
 import com.salesmanagement.management.entity.outward.Outward;
 import com.salesmanagement.management.entity.outward.OutwardId;
 import com.salesmanagement.management.repository.OutwardRepository;
+import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,11 +28,15 @@ public class OutwardService {
         salesService.updateSalesOnOutwardAddition(outward);
     }
 
-    public List<Outward> searchOutwardByTypeAndSize(String itemType, int itemSize) {
-        if (itemType.isEmpty() && itemSize == 0) return outwardRepository.findAll();
-        else if(itemType.isEmpty()) return outwardRepository.getOutwardByItemSize(itemSize);
-        else if(itemSize == 0) return outwardRepository.getOutwardByItemType(itemType);
-        else return outwardRepository.getOutwardByItemTypeAndItemSize(itemType,itemSize);
+    public List<Outward> searchOutwardByTypeAndSizeAndBailNumber(String itemType, int itemSize, String bailNumber) {
+        if ((StringUtils.isEmpty(itemType)) && itemSize == 0 && StringUtils.isEmpty(bailNumber)) return outwardRepository.findAll();
+        else if (itemSize==0 && StringUtils.isEmpty(itemType)) return outwardRepository.getOutwardByBailNumber(bailNumber);
+        else if (StringUtils.isEmpty(itemType) && StringUtils.isEmpty(bailNumber)) return outwardRepository.getOutwardByItemSize(itemSize);
+        else if (itemSize==0 && StringUtils.isEmpty(bailNumber)) return outwardRepository.getOutwardByItemType(itemType);
+        else if (itemSize==0) return outwardRepository.getOutwardByItemTypeAndBailNumber(itemType,bailNumber);
+        else if (StringUtils.isEmpty(itemType)) return outwardRepository.getOutwardByItemSizeAndBailNumber(itemSize,bailNumber);
+        else if (StringUtils.isEmpty(bailNumber)) return outwardRepository.getOutwardByItemTypeAndItemSize(itemType,itemSize);
+        else return outwardRepository.getOutwardByItemTypeAndItemSizeAndBailNumber(itemType, itemSize,bailNumber);
     }
 
     public boolean isOutwardAlreadyContainsItem(Outward outward) {

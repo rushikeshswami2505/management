@@ -68,6 +68,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>springboot-mysql-docker</finalName>
 	</build>
 
 </project>

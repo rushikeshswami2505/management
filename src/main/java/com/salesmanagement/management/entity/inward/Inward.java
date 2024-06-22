@@ -11,7 +11,6 @@ import lombok.*;
 public class Inward {
     @EmbeddedId
     private InwardId inwardId;
-
     private String inwardDate;
     private float inwardDozen;
     private int inwardPiece;

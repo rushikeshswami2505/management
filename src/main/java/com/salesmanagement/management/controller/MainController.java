@@ -4,6 +4,7 @@ import com.salesmanagement.management.entity.UpdateEntity;
 import com.salesmanagement.management.entity.inward.Inward;
 import com.salesmanagement.management.entity.items.Items;
 import com.salesmanagement.management.entity.items.ItemsId;
+import com.salesmanagement.management.entity.items.SearchItems;
 import com.salesmanagement.management.entity.outward.Outward;
 import com.salesmanagement.management.entity.sales.Sales;
 import com.salesmanagement.management.service.InwardService;
@@ -140,22 +141,22 @@ public class MainController {
 
     @PostMapping("/searchInwardItem")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<List<Inward>> searchInwardItem(@RequestBody Items items) {
-        List<Inward> searchQ = inwardService.searchInwardByTypeAndSize(items.getItemsId().getItemType(), items.getItemsId().getItemSize());
+    public ResponseEntity<List<Inward>> searchInwardItem(@RequestBody SearchItems searchItems) {
+        List<Inward> searchQ = inwardService.searchInwardByTypeAndSizeAndMemoNumber(searchItems.getItemType(), searchItems.getItemSize(), searchItems.getMemoNumber());
         return ResponseEntity.ok(searchQ);
     }
 
     @PostMapping("/searchOutwardItem")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<List<Outward>> searchOutwardItem(@RequestBody Items items) {
-        List<Outward> searchQ = outwardService.searchOutwardByTypeAndSize(items.getItemsId().getItemType(),items.getItemsId().getItemSize());
+    public ResponseEntity<List<Outward>> searchOutwardItem(@RequestBody SearchItems searchItems) {
+        List<Outward> searchQ = outwardService.searchOutwardByTypeAndSizeAndBailNumber(searchItems.getItemType(), searchItems.getItemSize(), searchItems.getBailNumber());
         return ResponseEntity.ok(searchQ);
     }
 
     @PostMapping("/searchAllItem")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<List<Items>> searchAllItem(@RequestBody Items items){
-        List<Items> searchQ = itemService.searchItemsByTypeAndSize(items.getItemsId().getItemType(),items.getItemsId().getItemSize());
+    public ResponseEntity<List<Items>> searchAllItem(@RequestBody SearchItems searchItems){
+        List<Items> searchQ = itemService.searchItemsByTypeAndSize(searchItems.getItemType(), searchItems.getItemSize());
         return ResponseEntity.ok(searchQ);
     }
 
@@ -169,8 +170,8 @@ public class MainController {
 
     @PostMapping("/searchSalesItem")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<List<Sales>> searchSalesItem(@RequestBody Items items){
-        List<Sales> searchQ = salesService.searchSalesByTypeAndSize(items.getItemsId().getItemType(),items.getItemsId().getItemSize());
+    public ResponseEntity<List<Sales>> searchSalesItem(@RequestBody SearchItems searchItems){
+        List<Sales> searchQ = salesService.searchSalesByTypeAndSize(searchItems.getItemType(), searchItems.getItemSize());
         return ResponseEntity.ok(searchQ);
     }
 }
