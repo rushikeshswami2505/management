@@ -75,3 +75,7 @@ body {
   background-color: DodgerBlue !important;
   color: #ffffff;
 }
+.addScroll {
+  height:50%;
+  overflow-y: auto;
+}
